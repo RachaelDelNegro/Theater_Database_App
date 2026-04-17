@@ -9,7 +9,7 @@ cd Theater_Database_App
 ```
 
 ### 2. Set up database connection
-Each team member must create their own config.php file
+Each team member must create their own config.php file //
 Copy the example file: 
 ```bash
 cp config.example.php config.php
@@ -19,11 +19,11 @@ Open `config.php` and replace:
 $username = "your_mysql_username";
 $password = "your_mysql_password";
 ```
-Note: config.php is ignored via `.gitignore` to keep credentials private
+Note: `config.php` is ignored via `.gitignore` to keep credentials private
 
 ## Database Info
-Host: mysql01.cs.virginia.edu
-Database: sep8vb_b
+Host: `mysql01.cs.virginia.edu`
+Database: `sep8vb_b`
 
 ## Testing your setup
 Open page in your browser
