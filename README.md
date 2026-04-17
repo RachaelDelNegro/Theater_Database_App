@@ -9,7 +9,7 @@ cd Theater_Database_App
 ```
 
 ### 2. Set up database connection
-Each team member must create their own config.php file  
+Each team member must create their own `config.php` file  
 Copy the example file: 
 ```bash
 cp config.example.php config.php
