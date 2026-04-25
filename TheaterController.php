@@ -207,8 +207,25 @@ class TheaterController {
         return $shows;
     }
 
-    
+    public function getPropsForShow() {
+        $props = $this->db->query("select * from props where show_id=$1", $_SESSION["show_id"]);
 
+        return $props;
+    }
+
+    public function getSetsForShow() {
+        $sets = $this->db->query("select * from sets where show_id=$1", $_SESSION["show_id"]);
+
+        return $sets;
+    }
+
+    public function getCostumesForShow() {
+        $costumes = $this->db->query("select * from costumes where show_id=$1", $_SESSION["show_id"]);
+
+        return $costumes;
+    }
+
+    
 
 
     public function search() {
