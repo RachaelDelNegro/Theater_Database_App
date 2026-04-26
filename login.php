@@ -7,28 +7,53 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
   <title>Document</title>
 </head>
+
+<?php 
+  include("TheaterController.php")
+?>
+
+<script>
+  function checkValuesEntered() {
+    let user = document.getElementById("username");
+    let password = document.getElementById("password");
+
+    if ((user.value.length !== 0 && password.value.length !== 0)) {
+      localStorage.clear();
+      document.getElementById("loginForm").action = "?command=login";
+
+      document.getElementById("username").value = user.value;
+      document.getElementById("password").value = password.value;
+
+      document.getElementById("loginForm").submit();
+      }
+    }
+
+</script>
+
 <body>
 <section id="login">
   <div class="container-lg">
     <div class = "text-center">
       <h2>Log in to your account</h2>
       <small class="text-secondary">Don't have an account?
-        <a href="signup.html">Sign up</a>
+        <a href="?command=signup">Sign up</a>
       </small>
     </div>
 
     <div class="row justify-content-center my-5">
       <div class="col-lg-6">
-        <form action = "login.php" method="POST"> // post request
+        <form onSubmit="checkValuesEntered()" method="POST" id="loginForm">
           <div class="mb-3">
             <label for="username" class="form-label">Username</label>
             <input type="text" class="form-control" id="username" name="username" placeholder="e.g. spongebob">
           </div>
           <div class="mb-3">
             <label for="exampleInputPassword1" class="form-label">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1" name="password" placeholder="e.g. pineapple123">
+            <input type="password" class="form-control" id="password" name="password" placeholder="e.g. pineapple123">
           </div>
-          <button type="submit" class="btn btn-secondary">Login</button>
+          <a href="show_list.html" class="btn btn btn-secondary">
+            Login
+          </a> 
         </form>
       </div>
     </div>
