@@ -8,9 +8,6 @@
   <title>Document</title>
 </head>
 
-<?php 
-  include("TheaterController.php")
-?>
 
 <script>
   function checkValuesEntered() {
@@ -19,7 +16,7 @@
 
     if ((user.value.length !== 0 && password.value.length !== 0)) {
       localStorage.clear();
-      document.getElementById("loginForm").action = "?command=login";
+      document.getElementById("loginForm").action = "index.php?command=login";
 
       document.getElementById("username").value = user.value;
       document.getElementById("password").value = password.value;
@@ -36,13 +33,13 @@
     <div class = "text-center">
       <h2>Log in to your account</h2>
       <small class="text-secondary">Don't have an account?
-        <a href="?command=signup">Sign up</a>
+        <a href="signup.php">Sign up</a>
       </small>
     </div>
 
     <div class="row justify-content-center my-5">
       <div class="col-lg-6">
-        <form onSubmit="checkValuesEntered()" method="POST" id="loginForm">
+        <form onsubmit="checkValuesEntered(); return false;" method="POST" id="loginForm">
           <div class="mb-3">
             <label for="username" class="form-label">Username</label>
             <input type="text" class="form-control" id="username" name="username" placeholder="e.g. spongebob">
@@ -51,9 +48,9 @@
             <label for="exampleInputPassword1" class="form-label">Password</label>
             <input type="password" class="form-control" id="password" name="password" placeholder="e.g. pineapple123">
           </div>
-          <a href="show_list.html" class="btn btn btn-secondary">
+          <button type="submit" class="btn btn-secondary">
             Login
-          </a> 
+          </button>
         </form>
       </div>
     </div>

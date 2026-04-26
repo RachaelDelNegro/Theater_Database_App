@@ -8,9 +8,7 @@
     <title>Select Group</title>
   </head>
 
-  <?php 
-    include("TheaterController.php");
-  ?>
+
   
   <body class="bg-secondary">
     <div class = "text-center">
@@ -18,33 +16,33 @@
     </div>
     <div class="row my-5 align items-center justify-content-center bs-secondary-color">
       <div class="card text-bg-dark mb-3" style="width: 18rem;">
-        <img src="../cast_group_image.jpg" class="card-img-top" alt="cast_photo">
+        <img src="cast_group_image.jpg" class="card-img-top" alt="cast_photo">
         <div class="card-body">
           <h5 class="card-title">Cast</h5>
           <p class="card-text">“Movies will make you famous; Television will make you rich; But theatre will make you good.” -Terrence Mann</p>
-          <form action="?command=selectgroup" method="POST">
+          <form action="index.php?command=selectgroup" method="POST">
             <input type="hidden" name="role" value="actor">
             <button type="submit" class="btn btn-secondary">Select</button>
           </form>
         </div>
       </div>
       <div class="card text-bg-dark mb-3" style="width: 18rem;">
-        <img src="../crew_group_photo.jpg" class="card-img-top" alt="crew_photo">
+        <img src="crew_group_image.jpg" class="card-img-top" alt="crew_photo">
         <div class="card-body">
           <h5 class="card-title">Crew</h5>
           <p class="card-text">“At the end of the day, give up your worries and give thanks for the journey.” – Ben Vereen</p>
-          <form action="?command=selectgroup" method="POST">
+          <form action="index.php?command=selectgroup" method="POST">
             <input type="hidden" name="role" value="crew">
             <button type="submit" class="btn btn-secondary">Select</button>
           </form>
         </div>
       </div>
       <div class="card text-bg-dark mb-3" style="width: 18rem;">
-        <img src="../director_group_image.jpg" class="card-img-top" alt="director_photo">
+        <img src="director_group_image.jpg" class="card-img-top" alt="director_photo">
         <div class="card-body">
           <h5 class="card-title">Director</h5>
           <p class="card-text">“Unless you learn how to be in your head, you’ll never learn how to create.” – Lin-Manuel Miranda</p>
-          <form action="?command=selectgroup" method="POST">
+          <form action="index.php?command=selectgroup" method="POST">
             <input type="hidden" name="role" value="director">
             <button type="submit" class="btn btn-secondary">Select</button>
           </form>
