@@ -75,11 +75,11 @@ class TheaterController {
     }
 
     public function showWelcome($message="") {
-        include "login.html";
+        include "login.php";
     }
 
     public function showSignUp($message="") {
-        include "/students/jvg2hc/students/jvg2hc//private/project/templates/signup.php";
+        include "signup.php";
     }
 
     public function showHomepage() {
