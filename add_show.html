@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+<!-- Deleted "background" field and replaced "screenplay" with "screenwriter" -->
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,6 +10,11 @@
   <body>
     <div class = "text-center">
         <h1 class="page-title text-bg-dark">Fill Out Form!</h1>
+    </div>
+    <div class="text-start">
+        <a href="show_list.html" class="btn btn-sm btn-secondary">
+            Go back to Show List
+        </a>
     </div>
     <form id="visitorForm" method="post" action="<?php $_SERVER['PHP_SELF'] ?>" onsubmit="return validateInput()">
     <div class="row g-3 mx-auto">
@@ -23,7 +29,7 @@
      <div class="col-6 mb-3">
          Name of Director:
          <input type='text' class='form-control' id='fillDirector' name='fillDirector'
-            placeholder="Format: Christopher Nolan"
+            placeholder="e.g. Christopher Nolan"
                 />
      </div>
    </div>
@@ -32,31 +38,26 @@
          Name of Production:
          <input type='text' class='form-control'
                  id='fillProduction' name='fillProduction'
-                 placeholder="Hamlet"
+                 placeholder="e.g. Hamlet"
                  />
      </div>
      <div class="col-6 mb-3">
          Setting:
          <input type='text' class='form-control' id='fillSetting' name='fillSetting'
-            placeholder="New York"
+            placeholder="e.g. New York"
                 />
      </div>
    </div>
    <div class="row g-3 mx-auto">
       <div class="col-6 d-grid mb-3">
-         Background:
+         Screenwriter:
          <input type='text' class='form-control'
                  id='fillBackground' name='fillBackground'
+                 placeholder="e.g. Steve Kloves"
                  />
      </div>
-     <div class="col-6 mb-3">
-         Playwright:
-         <input type='text' class='form-control' id='fillPlaywright' name='fillPlaywright'
-                />
-     </div>
-   </div>
    <div class="text-center">
-        <button type="submit" class="btn btn-lg btn-secondary">
+        <button type="submit" class="btn btn-lg btn-success">
           Submit
         </button>
     </div>
