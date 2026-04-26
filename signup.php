@@ -16,7 +16,7 @@
     let password = document.getElementById("password");
 
     if ((user.value.length !== 0) && (password.value.length !== 0)) {
-      document.getElementById("signupform").action = "?command=create_user";
+      document.getElementById("signupform").action = "index.php?command=create_user";
 
       document.getElementById("username").value = user.value;
       document.getElementById("password").value = password.value;

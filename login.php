@@ -16,7 +16,7 @@
 
     if ((user.value.length !== 0 && password.value.length !== 0)) {
       localStorage.clear();
-      document.getElementById("loginForm").action = "?command=login";
+      document.getElementById("loginForm").action = "index.php?command=login";
 
       document.getElementById("username").value = user.value;
       document.getElementById("password").value = password.value;

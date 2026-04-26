@@ -7,7 +7,8 @@ class TheaterController {
 
         session_start();
 
-        $this->db = new Database();
+        require_once "config.php";
+        $this->db = $db;
 
         $this->input = $input;
     }
@@ -126,7 +127,9 @@ class TheaterController {
     }
 
     public function login() {
-        $results = $this->db->query("select * from users where username = $1;", $_POST["username"]);
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ?");
+        $stmt->execute([$_POST["username"]]);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if (empty($results)) {
             $this->showWelcome("<div class='alert alert-warning' style='margin-top: 2%'> Account does not exist! </div>");
@@ -159,7 +162,9 @@ class TheaterController {
 
 
     public function createUser() {
-        $results = $this->db->query("select * from users where username = $1;", $_POST["username"]);
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ?");
+        $stmt->execute([$_POST["username"]]);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if (!empty($results)) {
 
@@ -170,9 +175,11 @@ class TheaterController {
             $password_valid = $this->checkPassword($_POST["password"]);
 
             if ($password_valid) {
-                $result = $this->db->query("insert into users (username, password)
-                values ($1, $2);",
-                $_POST["username"], password_hash($_POST["password"], PASSWORD_DEFAULT));
+                $stmt = $this->db->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+                $stmt->execute([
+                    $_POST["username"],
+                    password_hash($_POST["password"], PASSWORD_DEFAULT)
+                ]);
 
                 header("Location: show_list.html");
                 exit();
@@ -272,6 +279,3 @@ class TheaterController {
         return $array_string;
     }
 }
-
-$controller = new TheaterController(array_merge($_GET, $_POST));
-$controller->run();
