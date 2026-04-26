@@ -32,42 +32,42 @@ class TheaterController {
             case "login":
                 $this->login();
                 break;
-            case "logout":
-                $this->logout();
-                break;
-            case "homepage":
-                $this->showHomepage();
-                break;
-            case "profile":
-                $this->showProfile();
-                break;
-            case "search":
-                $this->search();
-                break;
-            case "addshow":
-                $this->showAddShow();
-                break;
-            case "showpage":
-                $this->getShowInfo();
-                break;
+            // case "logout":
+            //     $this->logout();
+            //     break;
+            // case "homepage":
+            //     $this->showHomepage();
+            //     break;
+            // case "profile":
+            //     $this->showProfile();
+            //     break;
+            // case "search":
+            //     $this->search();
+            //     break;
+            // case "addshow":
+            //     $this->showAddShow();
+            //     break;
+            // case "showpage":
+            //     $this->getShowInfo();
+            //     break;
             case "signup":
                 $this->showSignUp();
                 break;
             case "create_user":
                 $this->createUser();
                 return;
-            case "deleteuser":
-                $this->deleteUser();
+            case "selectgroup":
+                $this->addRole();
                 break;
-            case "createshow":
-                $this->addShow();
-                break;
-            case "review":
-                $this->leaveReview();
-                break;
-            case "showpagereviewed":
-                $this->showShowPage();
-                break;
+            // case "createshow":
+            //     $this->addShow();
+            //     break;
+            // case "review":
+            //     $this->leaveReview();
+            //     break;
+            // case "showpagereviewed":
+            //     $this->showShowPage();
+            //     break;
             default:
                 $this->showWelcome();
                 break;
@@ -75,7 +75,7 @@ class TheaterController {
     }
 
     public function showWelcome($message="") {
-        include "insert file name here";
+        include "login.html";
     }
 
     public function showSignUp($message="") {
@@ -159,7 +159,7 @@ class TheaterController {
 
 
     public function createUser() {
-        $results = $this->db->query("select * from users where username = $1;", $_POST["usernameCreate"]);
+        $results = $this->db->query("select * from users where username = $1;", $_POST["username"]);
 
         if (!empty($results)) {
 
@@ -167,12 +167,12 @@ class TheaterController {
             return;
         } else {
 
-            $password_valid = $this->checkPassword($_POST["passwordCreate"]);
+            $password_valid = $this->checkPassword($_POST["password"]);
 
             if ($password_valid) {
-                $result = $this->db->query("insert into users (username, password, user_role)
+                $result = $this->db->query("insert into users (username, password)
                 values ($1, $2, $3);",
-                $_POST["usernameCreate"], password_hash($_POST["passwordCreate"], PASSWORD_DEFAULT), $_POST["userRoleCreate"]);
+                $_POST["username"], password_hash($_POST["password"], PASSWORD_DEFAULT));
 
                 $this->showWelcome("<div class='alert alert-success' style='margin-top: 2%'> User created successfully! </div>");
                 return;
@@ -190,8 +190,16 @@ class TheaterController {
             return false;
         }
 
-        $pattern = "/[a-zA-z0-9!@#$%]*[!$%&@#]+[a-zA-z0-9!@#$%]*/"; 
+        $pattern = "/[a-zA-z0-9]*/"; 
         return preg_match($pattern, $password);
+    }
+
+    public function addRole() {
+        $result = $this->db->query("update users set role = $1 where username=$2", $_POST["role"], $_SESSION["username"]);
+
+        header("Location: ?command=showlist");
+
+        return;
     }
 
     public function deleteUser() {
