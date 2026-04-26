@@ -36,7 +36,7 @@
     <div class = "text-center">
       <h2>Log in to your account</h2>
       <small class="text-secondary">Don't have an account?
-        <a href="?command=signup">Sign up</a>
+        <a href="signup.php">Sign up</a>
       </small>
     </div>
 

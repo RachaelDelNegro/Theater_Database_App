@@ -35,13 +35,13 @@
     <div class = "text-center">
       <h2>Sign up for an account</h2>
       <small class="text-secondary">Already have an account?
-        <a href="?command=welcome">Log in</a>
+        <a href="login.php">Log in</a>
       </small>
     </div>
 
     <div class="row justify-content-center my-5">
       <div class="col-lg-6">
-        <form onSubmit="checkValues()" method="POST" id="signupform">
+        <form onsubmit="checkValues(); return false;" method="POST" id="signupform">
           <div class="mb-3">
             <label for="username" class="form-label">Username</label>
             <input type="text" class="form-control" id="username" name="username" placeholder="e.g. spongebob">
@@ -53,9 +53,9 @@
           <div id="passwordHelpBlock" class="form-text">
             Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
           </div>
-          <button class="btn btn btn-secondary" type="submit">
+          <button class="btn btn-secondary" type="submit">
             Signup
-          </a> 
+          </button>
         </form>
       </div>
     </div>
