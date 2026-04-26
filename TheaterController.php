@@ -135,12 +135,12 @@ class TheaterController {
             $this->showWelcome("<div class='alert alert-warning' style='margin-top: 2%'> Account does not exist! </div>");
             return;
         } else {
-            $hashed_password = $results[0]["password"];
+            $hashed_password = $results[0]["password_hash"];
             $correct = password_verify($_POST["password"], $hashed_password);
 
             if ($correct) {
                 $_SESSION["username"] = $_POST["username"];
-                $_SESSION["user_role"] = $_POST["user_role"];
+                $_SESSION["user_role"] = $results[0]["user_role"];
 
                 header("Location: show_list.html");
                 exit();
@@ -175,11 +175,16 @@ class TheaterController {
             $password_valid = $this->checkPassword($_POST["password"]);
 
             if ($password_valid) {
-                $stmt = $this->db->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-                $stmt->execute([
-                    $_POST["username"],
-                    password_hash($_POST["password"], PASSWORD_DEFAULT)
-                ]);
+                $stmt = $this->db->prepare("
+                INSERT INTO users (username, password_hash, user_role)
+                VALUES (?, ?, ?)
+            ");
+
+            $stmt->execute([
+                $_POST["username"],
+                password_hash($_POST["password"], PASSWORD_DEFAULT),
+                "actor"  // default role for now
+            ]);
 
                 header("Location: show_list.html");
                 exit();
@@ -202,12 +207,26 @@ class TheaterController {
     }
 
     public function addRole() {
-        $result = $this->db->query("update users set role = $1 where username=$2", $_POST["role"], $_SESSION["username"]);
+        $role = $_POST["role"];
 
-        header("Location: ?command=showlist");
+        // update DB
+        $stmt = $this->db->prepare("UPDATE users SET user_role = ? WHERE username = ?");
+        $stmt->execute([$role, $_SESSION["username"]]);
 
-        return;
-    }
+        // store in session
+        $_SESSION["user_role"] = $role;
+
+        // redirect based on role
+        if ($role == "actor") {
+            header("Location: show_actor_landing_page.html");
+        } elseif ($role == "crew") {
+            header("Location: show_crew_landing_page.html");
+        } elseif ($role == "director") {
+            header("Location: show_director_landing_page.html");
+        }
+
+    exit();
+}
 
     public function deleteUser() {
 
