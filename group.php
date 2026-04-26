@@ -8,9 +8,7 @@
     <title>Select Group</title>
   </head>
 
-  <?php 
-    include("TheaterController.php");
-  ?>
+
   
   <body class="bg-secondary">
     <div class = "text-center">

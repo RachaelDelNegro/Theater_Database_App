@@ -139,8 +139,8 @@ class TheaterController {
                 $_SESSION["username"] = $_POST["username"];
                 $_SESSION["user_role"] = $_POST["user_role"];
 
-                header("Location: ?command=homepage");
-                return;
+                header("Location: show_list.html");
+                exit();
             } else {
                 $this->showWelcome("<div class='alert alert-danger' style='margin-top: 2%'> Incorrect Password </div>");
                 return;
@@ -171,11 +171,11 @@ class TheaterController {
 
             if ($password_valid) {
                 $result = $this->db->query("insert into users (username, password)
-                values ($1, $2, $3);",
+                values ($1, $2);",
                 $_POST["username"], password_hash($_POST["password"], PASSWORD_DEFAULT));
 
-                $this->showWelcome("<div class='alert alert-success' style='margin-top: 2%'> User created successfully! </div>");
-                return;
+                header("Location: show_list.html");
+                exit();
             } else {
 
                 $this->showSignUp("<div class='alert alert-danger' style='margin-top: 2%'> Password must be between 5 and 16 characters, 
@@ -272,3 +272,6 @@ class TheaterController {
         return $array_string;
     }
 }
+
+$controller = new TheaterController(array_merge($_GET, $_POST));
+$controller->run();

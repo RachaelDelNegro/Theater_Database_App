@@ -8,9 +8,6 @@
   <title>Document</title>
 </head>
 
-<?php 
-  include("TheaterController.php");
-?>
 
 <script>
   function checkValues() {
