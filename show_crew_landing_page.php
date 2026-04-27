@@ -32,7 +32,9 @@
         <div class="card-body">
           <h2 class="h5">Props Database</h2>
           <p>View props, assigned scenes, status, and storage locations.</p>
-          <a href="#" class="btn btn-outline-secondary">Open Props</a>
+          <a href="index.php?command=props&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
+            Open Props
+          </a>
         </div>
       </div>
     </div>
@@ -42,7 +44,9 @@
         <div class="card-body">
           <h2 class="h5">Costumes Database</h2>
           <p>View costumes, assigned characters, sizes, and completion status.</p>
-          <a href="#" class="btn btn-outline-secondary">Open Costumes</a>
+          <a href="index.php?command=costumes&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
+            Open Costumes
+          </a>
         </div>
       </div>
     </div>
@@ -52,7 +56,9 @@
         <div class="card-body">
           <h2 class="h5">Sets Database</h2>
           <p>View set pieces, locations, assigned scenes, and build progress.</p>
-          <a href="#" class="btn btn-outline-secondary">Open Sets</a>
+          <a href="index.php?command=sets&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
+            Open Sets
+          </a>
         </div>
       </div>
     </div>
