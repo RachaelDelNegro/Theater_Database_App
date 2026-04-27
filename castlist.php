@@ -8,51 +8,59 @@
 </head>
 
 <body class="bg-light">
-<div class="container my-5">
 
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h1>Cast List</h1>
-      <p class="text-muted mb-0">
-        Show: <?= htmlspecialchars($show["title"]) ?>
-      </p>
-    </div>
-
-    <a href="index.php?command=actorpage&show_id=<?= $show["show_id"] ?>" class="btn btn-outline-secondary">
-      Back to Actor Page
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="index.php?command=showlist">Theater Database</a>
+    <a href="index.php?command=showpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-light btn-sm">
+      Back to Show
     </a>
+  </div>
+</nav>
+
+<main class="container my-5">
+  <div class="text-center mb-4">
+    <h1 class="display-5">Cast List</h1>
+    <p class="lead text-muted">
+      Actors signed up for <?= htmlspecialchars($show["title"]) ?>
+    </p>
   </div>
 
   <div class="card shadow-sm">
     <div class="card-body">
-
-      <table class="table table-hover align-middle">
-        <thead class="table-dark">
-          <tr>
-            <th>Actor</th>
-            <th>Character</th>
-            <th>Main / Side</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <?php foreach ($castList as $cast): ?>
-            <tr>
-              <td><?= htmlspecialchars($cast["username"]) ?></td>
-              <td><?= htmlspecialchars($cast["character_name"]) ?></td>
-              <td><?= htmlspecialchars($cast["main_side"]) ?></td>
-            </tr>
+      <?php if (empty($cast)): ?>
+        <p class="text-muted mb-0">No actors have joined this show yet.</p>
+      <?php else: ?>
+        <ul class="list-group list-group-flush">
+          <?php foreach ($cast as $member): ?>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span><?= htmlspecialchars($member["username"]) ?></span>
+              <span class="badge bg-secondary">
+                <?= htmlspecialchars($member["perms"]) ?>
+              </span>
+            </li>
           <?php endforeach; ?>
-        </tbody>
-      </table>
-
-      <?php if (empty($castList)): ?>
-        <p class="text-muted">No cast assignments yet.</p>
+        </ul>
       <?php endif; ?>
-
     </div>
   </div>
 
-</div>
+  <div class="mt-4">
+    <?php if ($_SESSION['perms'] == 'director'): ?>
+      <a href="index.php?command=directorpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
+        Back to Director View
+      </a>
+    <?php else: ?>
+      <a href="index.php?command=actorpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
+        Back to Actor View
+      </a>
+    <?php endif; ?>
+
+    <a href="index.php?command=showlist" class="btn btn-outline-secondary">
+      Back to Show List
+    </a>
+  </div>
+</main>
+
 </body>
 </html>

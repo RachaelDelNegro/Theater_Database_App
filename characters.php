@@ -8,51 +8,73 @@
 </head>
 
 <body class="bg-light">
-<div class="container my-5">
 
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h1>Character Database</h1>
-      <p class="text-muted mb-0">
-        Show: <?= htmlspecialchars($show["title"]) ?>
-      </p>
-    </div>
-
-    <a href="index.php?command=actorpage&show_id=<?= $show["show_id"] ?>" class="btn btn-outline-secondary">
-      Back to Actor Page
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="index.php?command=showlist">Theater Database</a>
+    <a href="index.php?command=showpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-light btn-sm">
+      Back to Show
     </a>
+  </div>
+</nav>
+
+<main class="container my-5">
+  <div class="text-center mb-4">
+    <h1 class="display-5">Characters</h1>
+    <p class="lead text-muted">
+      Characters for <?= htmlspecialchars($show["title"]) ?>
+    </p>
   </div>
 
   <div class="card shadow-sm">
     <div class="card-body">
-
-      <table class="table table-hover align-middle">
-        <thead class="table-dark">
-          <tr>
-            <th>Character ID</th>
-            <th>Name</th>
-            <th>Main / Side</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <?php foreach ($characters as $character): ?>
-            <tr>
-              <td><?= htmlspecialchars($character["character_id"]) ?></td>
-              <td><?= htmlspecialchars($character["character_name"]) ?></td>
-              <td><?= htmlspecialchars($character["main_side"]) ?></td>
-            </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
-
       <?php if (empty($characters)): ?>
-        <p class="text-muted">No characters found for this show.</p>
+        <p class="text-muted mb-0">No characters have been added for this show yet.</p>
+      <?php else: ?>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th>Character</th>
+                <th>Role Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($characters as $character): ?>
+                <tr>
+                  <td><?= htmlspecialchars($character["character_name"]) ?></td>
+                  <td>
+                    <?php if ($character["main_side"] === "main"): ?>
+                      <span class="badge bg-primary">Main</span>
+                    <?php else: ?>
+                      <span class="badge bg-secondary">Side</span>
+                    <?php endif; ?>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
       <?php endif; ?>
-
     </div>
   </div>
 
-</div>
+  <div class="mt-4">
+    <?php if ($_SESSION['perms'] == 'director'): ?>
+      <a href="index.php?command=directorpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
+        Back to Director View
+      </a>
+    <?php else: ?>
+      <a href="index.php?command=actorpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
+        Back to Actor View
+      </a>
+    <?php endif; ?>
+
+    <a href="index.php?command=showlist" class="btn btn-outline-secondary">
+      Back to Show List
+    </a>
+  </div>
+</main>
+
 </body>
 </html>

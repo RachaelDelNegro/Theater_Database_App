@@ -112,9 +112,16 @@
     </div>
   </div>
 
-</div>
+  <div class="mt-4">
+    <a href="index.php?command=directorpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
+      Back to Director View
+    </a>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <a href="index.php?command=showlist" class="btn btn-outline-secondary">
+      Back to Show List
+    </a>
+  </div>
+</main>
 
 </body>
 </html>

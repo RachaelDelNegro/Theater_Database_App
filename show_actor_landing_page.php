@@ -35,9 +35,8 @@
       <div class="card shadow-sm h-100">
         <div class="card-body">
           <h2 class="h5">Character Database</h2>
-          <p>View assigned characters, descriptions, relationships, and actor assignments.</p>
-
-          <a href="index.php?command=characters&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-secondary">
+          <p>View assigned characters, descriptions, and actor assignments.</p>
+          <a href="index.php?command=characters&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
             Open Characters
           </a>
         </div>
@@ -65,7 +64,6 @@
         <div class="card-body">
           <h2 class="h5">Cast List</h2>
           <p>View other actors signed up for this production.</p>
-
           <a href="index.php?command=castlist&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
             Open Cast List
           </a>

@@ -41,6 +41,11 @@
           <a href="group.php?show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
             Join Show
           </a>
+
+          <a href="index.php?command=deleteshow&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-danger">
+            Delete Show
+          </a>
+
         </div>
       </li>
     <?php endforeach; ?>

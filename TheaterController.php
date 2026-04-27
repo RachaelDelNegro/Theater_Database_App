@@ -42,6 +42,13 @@ class TheaterController {
             || $this->input["command"] == "crewlist"
             || $this->input["command"] == "assigncrewtask"
             || $this->input["command"] == "deletecrewtask"
+            || $this->input["command"] == "rehearsal"
+            || $this->input["command"] == "props"
+            || $this->input["command"] == "sets"
+            || $this->input["command"] == "addevent"
+            || $this->input["command"] == "updateevent"
+            || $this->input["command"] == "deleteevent"
+            || $this->input["command"] == "deleteshow"
             || isset($_SESSION["username"])
         )) {
             $command = $this->input["command"];
@@ -64,7 +71,9 @@ class TheaterController {
             case "actorpage":
                 $this->showActorPage();
                 break;
-
+            case "costumes":
+                $this->showCostumesPage();
+                break;
             case "crewpage":
                 $this->showCrewPage();
                 break;
@@ -149,6 +158,43 @@ class TheaterController {
                 $this->deleteCrewTask();
                 break;
 
+                $this->showCharactersPage();
+                break;
+            case "rehearsal":
+                $this->showRehearsalPage();
+                break;
+            case "castlist":
+                $this->showCastListPage();
+                break;
+            case "crewlist":
+                $this->showCrewListPage();
+                break;
+            case "props":
+                $this->showPropsPage();
+                break;
+            case "sets":
+                $this->showSetsPage();
+                break;
+            case "addevent":
+                $this->addEvent();
+                break;
+
+            case "updateevent":
+                $this->updateEvent();
+                break;
+
+            case "deleteevent":
+                $this->deleteEvent();
+                break;
+            case "deleteshow":
+                $this->deleteShow();
+                break;
+            // case "review":
+            //     $this->leaveReview();
+            //     break;
+            // case "showpagereviewed":
+            //     $this->showShowPage();
+            //     break;
             default:
                 $this->showWelcome();
                 break;
@@ -354,6 +400,8 @@ class TheaterController {
         $stmt->execute([$show_id]);
         $show = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        $this->getPermissions($show_id);
+
         include "props.php";
     }
 
@@ -397,6 +445,8 @@ class TheaterController {
         $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
         $stmt->execute([$show_id]);
         $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $this->getPermissions($show_id);
 
         include "sets.php";
     }
@@ -448,6 +498,8 @@ class TheaterController {
         $stmt->execute([$show_id]);
         $show = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        $this->getPermissions($show_id);
+
         include "costumes.php";
     }
 
@@ -489,6 +541,219 @@ class TheaterController {
         include "show_actor_landing_page.php";
     }
 
+    public function showCharactersPage() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $stmt = $this->db->prepare("
+            SELECT *
+            FROM characters
+            WHERE show_id = ?
+            ORDER BY character_name
+        ");
+        $stmt->execute([$show_id]);
+        $characters = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->getPermissions($show_id);
+
+        include "characters.php";
+    }
+
+        public function showCostumesPage() {
+        $show_id = $_GET["show_id"];
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $costumes = $this->getCostumesForShow($show_id);
+
+        $this->getPermissions($show_id);
+
+        include "costumes.php";
+    }
+
+    public function showPropsPage() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $props = $this->getPropsForShow($show_id);
+
+        $this->getPermissions($show_id);
+
+        include "props.php";
+    }
+
+    public function showSetsPage() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $sets = $this->getSetsForShow($show_id);
+
+        $this->getPermissions($show_id);
+
+        include "sets.php";
+    }
+
+    public function showRehearsalPage() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $stmt = $this->db->prepare("
+            SELECT 
+                events.event_id,
+                events.event_title,
+                events.event_date,
+                events.event_time,
+                GROUP_CONCAT(users.username ORDER BY users.username SEPARATOR ', ') AS required_users
+            FROM events
+            LEFT JOIN event_calls ON events.event_id = event_calls.event_id
+            LEFT JOIN users ON event_calls.user_id = users.user_id
+            WHERE events.show_id = ?
+            GROUP BY events.event_id, events.event_title, events.event_date, events.event_time
+            ORDER BY events.event_date, events.event_time
+        ");
+        $stmt->execute([$show_id]);
+        $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->getPermissions($show_id);
+
+        include "rehearsal.php";
+}
+
+    private function requireDirector($show_id) {
+        if (!isset($_SESSION["userid"])) {
+            header("Location: index.php?command=welcome");
+            exit();
+        }
+
+        $stmt = $this->db->prepare("
+            SELECT perms
+            FROM user_shows
+            WHERE user_id = ? AND show_id = ?
+        ");
+        $stmt->execute([$_SESSION["userid"], $show_id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$row || $row["perms"] !== "director") {
+            die("Only directors can manage rehearsals.");
+        }
+    }
+
+    public function addEvent() {
+        $show_id = $_POST["show_id"];
+        $this->requireDirector($show_id);
+
+        $stmt = $this->db->prepare("
+            INSERT INTO events (show_id, event_title, event_date, event_time)
+            VALUES (?, ?, ?, ?)
+        ");
+
+        $stmt->execute([
+            $show_id,
+            $_POST["event_title"],
+            $_POST["event_date"],
+            $_POST["event_time"]
+        ]);
+
+        header("Location: index.php?command=rehearsal&show_id=" . urlencode($show_id));
+        exit();
+    }
+
+    public function updateEvent() {
+        $show_id = $_POST["show_id"];
+        $this->requireDirector($show_id);
+
+        $stmt = $this->db->prepare("
+            UPDATE events
+            SET event_title = ?, event_date = ?, event_time = ?
+            WHERE event_id = ? AND show_id = ?
+        ");
+
+        $stmt->execute([
+            $_POST["event_title"],
+            $_POST["event_date"],
+            $_POST["event_time"],
+            $_POST["event_id"],
+            $show_id
+        ]);
+
+        header("Location: index.php?command=rehearsal&show_id=" . urlencode($show_id));
+        exit();
+    }
+
+    public function deleteEvent() {
+        $show_id = $_POST["show_id"];
+        $this->requireDirector($show_id);
+
+        $stmt = $this->db->prepare("DELETE FROM event_calls WHERE event_id = ?");
+        $stmt->execute([$_POST["event_id"]]);
+
+        $stmt = $this->db->prepare("
+            DELETE FROM events
+            WHERE event_id = ? AND show_id = ?
+        ");
+        $stmt->execute([$_POST["event_id"], $show_id]);
+
+        header("Location: index.php?command=rehearsal&show_id=" . urlencode($show_id));
+        exit();
+    }
+
+    public function showCastListPage() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $stmt = $this->db->prepare("
+            SELECT users.username, user_shows.perms
+            FROM user_shows
+            JOIN users ON user_shows.user_id = users.user_id
+            WHERE user_shows.show_id = ? AND user_shows.perms = 'actor'
+            ORDER BY users.username
+        ");
+        $stmt->execute([$show_id]);
+        $cast = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->getPermissions($show_id);
+
+        include "castlist.php";
+    }
+
+    public function showCrewListPage() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $stmt = $this->db->prepare("
+            SELECT users.username, user_shows.perms
+            FROM user_shows
+            JOIN users ON user_shows.user_id = users.user_id
+            WHERE user_shows.show_id = ? AND user_shows.perms = 'crew'
+            ORDER BY users.username
+        ");
+        $stmt->execute([$show_id]);
+        $crew = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->getPermissions($show_id);
+
+        include "crewlist.php";
+}
+
     public function showCrewPage() {
         $show_id = $_GET["show_id"];
 
@@ -498,6 +763,8 @@ class TheaterController {
 
         include "show_crew_landing_page.php";
     }
+
+
 
     public function showDirectorPage() {
         $show_id = $_GET["show_id"];
@@ -569,7 +836,13 @@ class TheaterController {
                 password_hash($_POST["password"], PASSWORD_DEFAULT),
                 "actor"  // default role for now
             ]);
+                $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ?");
+                $stmt->execute([$_POST["username"]]);
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+                $_SESSION["username"] = $_POST["username"];
+                $_SESSION["userid"] = $results[0]["user_id"];
+                $_SESSION["user_role"] = $results[0]["user_role"];
                 header("Location: ?command=showlist");
                 exit();
             } else {
@@ -598,15 +871,57 @@ class TheaterController {
 
         return $props;
     }
+    public function addPropsToShow($showid, $propname) {
+        $stmt = $this->db->prepare("
+        INSERT INTO props (show_id, item_name) VALUES (?, ?)");
+
+        $stmt->execute([$showid, $propname]);
+    }
+
+    public function updatePropInfo($showid, $propname, $propid) {
+        $stmt = $this->db->prepare("
+        UPDATE props SET show_id=?, item_name=? WHERE prop_id=?");
+
+        $stmt->execute([$showid, $propname, $propid]);
+    }
+
+    public function deleteProp($propid) {
+        $stmt = $this->db->prepare("DELETE FROM props WHERE prop_id = ?");
+
+        $stmt->execute([$propid]);
+    }
 
     public function getSetsForShow($showid) {
         $stmt = $this->db->prepare("SELECT * FROM sets WHERE show_id = ?");
+
         $stmt->execute([$showid]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function addSetsToShow($showid, $setname, $material) {
+        $stmt = $this->db->prepare("
+        INSERT INTO sets (show_id, set_item_name, material) VALUES (?, ?, ?)");
+
+        $stmt->execute([$showid, $setname, $material]);
+    }
+    public function updateSetInfo($showid, $setname, $material, $setid) {
+        $stmt = $this->db->prepare("
+        UPDATE sets SET show_id=?, item_name=?, material=? WHERE set_id=?");
+
+        $stmt->execute([$showid, $setname, $material, $setid]);
+    }
+
+    public function deleteSet($setid) {
+        $stmt = $this->db->prepare("DELETE FROM sets WHERE set_id = ?");
+
+        $stmt->execute([$setid]);
+    }
 
     public function getCostumesForShow($showid) {
-        $stmt = $this->db->prepare("SELECT * FROM costumes WHERE show_id = ?");
+        $stmt = $this->db->prepare("
+        SELECT * 
+        FROM costumes NATURAL JOIN characters 
+        WHERE show_id = ?");
+
         $stmt->execute([$showid]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -639,6 +954,24 @@ class TheaterController {
         $characters = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $characters;
+    }
+    public function addCharactersToShow($showid, $charactername, $main_side) {
+        $stmt = $this->db->prepare("
+        INSERT INTO characters (show_id, character_name, main_side) VALUES (?, ?, ?)");
+
+        $stmt->execute([$showid, $charactername, $main_side]);
+    }
+    public function updateCharacterInfo($showid, $charactername, $main_side, $characterid) {
+        $stmt = $this->db->prepare("
+        UPDATE characters SET show_id=?, character_name=?, main_side=? WHERE character_id=?");
+
+        $stmt->execute([$showid, $charactername, $main_side, $characterid]);
+    }
+
+    public function deleteCharacter($characterid) {
+        $stmt = $this->db->prepare("DELETE FROM characters WHERE character_id = ?");
+
+        $stmt->execute([$characterid]);
     }
 
     public function getRehearsalScheduleForIndividual($showid) {
@@ -738,5 +1071,27 @@ class TheaterController {
         exit();
     }
 
+    public function getPermissions($showid) {
+        //Get user perms
+        $stmt = $this->db->prepare("SELECT perms FROM user_shows WHERE show_id = ? AND user_id = ?");
+        $stmt->execute([$showid, $_SESSION["userid"]]);
+        $perm = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (is_array($perm)) {
+            $_SESSION['perms'] = $perm['perms'];
+        } else {
+            $_SESSION['perms'] = "none";
+        }
+    }
+
+    public function deleteShow() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("DELETE FROM shows WHERE show_id = ?");
+
+        $stmt->execute([$show_id]);
+
+        $this->showList();
+    }
 
 }
