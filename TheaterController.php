@@ -93,29 +93,6 @@ class TheaterController {
         include "signup.php";
     }
 
-    public function showHomepage() {
-        $shows = $this->db->query("select * from project_shows");
-
-        $array_string = $this->displayShows($shows);
-
-        include "/students/jvg2hc/students/jvg2hc//private/project/templates/homepage.php";
-    }
-
-    public function showSearch($array_string_search) {
-        $array_string = $array_string_search;
-
-        include "/students/jvg2hc/students/jvg2hc//private/project/templates/homepage.php";
-    }
-
-    public function showProfile() {
-        $username = $_SESSION["username"];
-
-        $reviews = $this->db->query("select * from project_reviews where username = $1", $username);
-
-        $array_string = $this->displayReviewsProfilePage($reviews);
-
-        include "/students/jvg2hc/students/jvg2hc//private/project/templates/profile.php";
-    }
 
     public function showAddShow($message="") {
         include "addshow.php";
@@ -382,31 +359,62 @@ class TheaterController {
         return preg_match($pattern, $password);
     }
 
-    public function getPropsForShow() {
+    public function getPropsForShow($showid) {
         $stmt = $this->db->prepare("SELECT * FROM props WHERE show_id = ?");
 
-        $stmt->execute([$_SESSION['show_id']]);
+        $stmt->execute([$showid]);
         $props = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $props;
     }
 
-    public function getSetsForShow() {
+    public function getSetsForShow($showid) {
         $stmt = $this->db->prepare("SELECT * FROM props WHERE show_id = ?");
 
-        $stmt->execute([$_SESSION['show_id']]);
+        $stmt->execute([$showid]);
         $sets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $sets;
     }
 
-    public function getCostumesForShow() {
+    public function getCostumesForShow($showid) {
         $stmt = $this->db->prepare("SELECT * FROM props WHERE show_id = ?");
 
-        $stmt->execute([$_SESSION['show_id']]);
+        $stmt->execute([$showid]);
         $costumes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $costumes;
     }
 
+    public function getCastList($showid) {
+        $stmt = $this->db->prepare("
+        SELECT username, character_name 
+        FROM users NATURAL JOIN actors NATURAL JOIN characters 
+        WHERE show_id = ?");
+
+        $stmt->execute([$showid]);
+        $castList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $castList;
+    }
+
+    public function getCharactersForShow($showid) {
+        $stmt = $this->db->prepare("SELECT * FROM characters WHERE show_id = ?");
+
+        $stmt->execute([$showid]);
+        $characters = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $characters;
+    }
+
+    public function getRehearsalScheduleForShow($showid) {
+        $stmt = $this->db->prepare("
+            SELECT *
+            FROM events
+            WHERE show_id = ?
+            ORDER BY event_date, event_time
+        ");
+        $stmt->execute([$showid]);
+        $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
