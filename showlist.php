@@ -34,11 +34,11 @@
         </div>
 
         <div>
-          <a href="show_landing_page.html" class="btn btn-info">
+          <a href="index.php?command=showpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-info">
             View Show
           </a>
 
-          <a href="group.php" class="btn btn-primary">
+          <a href="group.php?show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
             Join Show
           </a>
         </div>

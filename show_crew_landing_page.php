@@ -10,9 +10,9 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
-    <a class="navbar-brand" href="show_list.html">Theater Database</a>
+    <a class="navbar-brand" href="index.php?command=showlist">Theater Database</a>
     <div class="d-flex gap-2">
-      <a href="show_list.html" class="btn btn-outline-light btn-sm">All Shows</a>
+      <a href="index.php?command=showlist" class="btn btn-outline-light btn-sm">All Shows</a>
       <a href="login.php" class="btn btn-outline-light btn-sm">Log Out</a>
     </div>
   </div>
@@ -20,7 +20,9 @@
 
 <main class="container my-5">
   <div class="text-center mb-4">
-    <h1 class="display-5">Crew View: Wicked</h1>
+    <h1 class="display-5">
+      Crew View: <?= htmlspecialchars($show["title"]) ?>
+    </h1>
     <p class="lead text-muted">Crew-specific databases and show information.</p>
   </div>
 
@@ -70,15 +72,19 @@
         <div class="card-body">
           <h2 class="h5">Rehearsal Schedule</h2>
           <p>View tech rehearsals, production meetings, and run-through dates.</p>
-          <a href="#" class="btn btn-outline-secondary">Open Schedule</a>
+          <a href="index.php?command=rehearsal&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
+            Open Schedule
+          </a>
         </div>
       </div>
     </div>
   </div>
 
   <div class="mt-4">
-    <a href="show_landing_page.html" class="btn btn-primary">Back to Show Landing Page</a>
-    <a href="show_list.html" class="btn btn-outline-secondary">Back to Show List</a>
+    <a href="index.php?command=showpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
+      Back to Show Landing Page
+    </a>
+    <a href="index.php?command=showlist" class="btn btn-outline-secondary">Back to Show List</a>
   </div>
 </main>
 </body>

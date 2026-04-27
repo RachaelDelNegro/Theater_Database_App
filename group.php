@@ -1,3 +1,11 @@
+<?php
+$show_id = $_GET["show_id"] ?? null;
+
+if (!$show_id) {
+    die("No show selected.");
+}
+?>
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -22,6 +30,7 @@
           <p class="card-text">“Movies will make you famous; Television will make you rich; But theatre will make you good.” -Terrence Mann</p>
           <form action="index.php?command=selectgroup" method="POST">
             <input type="hidden" name="role" value="actor">
+            <input type="hidden" name="show_id" value="<?= htmlspecialchars($show_id) ?>">
             <button type="submit" class="btn btn-secondary">Select</button>
           </form>
         </div>
@@ -33,6 +42,7 @@
           <p class="card-text">“At the end of the day, give up your worries and give thanks for the journey.” – Ben Vereen</p>
           <form action="index.php?command=selectgroup" method="POST">
             <input type="hidden" name="role" value="crew">
+            <input type="hidden" name="show_id" value="<?= htmlspecialchars($show_id) ?>">
             <button type="submit" class="btn btn-secondary">Select</button>
           </form>
         </div>
@@ -44,6 +54,7 @@
           <p class="card-text">“Unless you learn how to be in your head, you’ll never learn how to create.” – Lin-Manuel Miranda</p>
           <form action="index.php?command=selectgroup" method="POST">
             <input type="hidden" name="role" value="director">
+            <input type="hidden" name="show_id" value="<?= htmlspecialchars($show_id) ?>">
             <button type="submit" class="btn btn-secondary">Select</button>
           </form>
         </div>
