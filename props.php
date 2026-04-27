@@ -4,70 +4,89 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-  <title>Props</title>
+  <title>Props Database</title>
 </head>
 
 <body class="bg-light">
+<div class="container my-5">
 
-<nav class="navbar navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" href="index.php?command=showlist">Theater Database</a>
-    <a href="index.php?command=showpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-light btn-sm">
-      Back to Show
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1>Props Database</h1>
+      <p class="text-muted mb-0">
+        Show: <?= htmlspecialchars($show["title"]) ?>
+      </p>
+    </div>
+
+    <a href="index.php?command=crewpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
+      Back to Crew Page
     </a>
   </div>
-</nav>
 
-<main class="container my-5">
+  <!-- SEARCH BAR -->
+  <form method="get" action="index.php" class="mb-4">
+    <input type="hidden" name="command" value="props">
+    <input type="hidden" name="show_id" value="<?= htmlspecialchars($show["show_id"]) ?>">
 
-  <div class="text-center mb-4">
-    <h1 class="display-5">Props</h1>
-    <p class="lead text-muted">
-      Props for <?= htmlspecialchars($show["title"]) ?>
-    </p>
-  </div>
+    <div class="input-group">
+      <input type="text" 
+             name="search" 
+             class="form-control" 
+             placeholder="Search props..."
+             value="<?= htmlspecialchars($_GET["search"] ?? "") ?>">
+      <button class="btn btn-dark" type="submit">Search</button>
+    </div>
+  </form>
 
-  <div class="card shadow-sm">
+  <!-- ADD PROP -->
+  <div class="card shadow-sm mb-4">
     <div class="card-body">
+      <h2 class="h5 mb-3">Add New Prop</h2>
 
-      <?php if (empty($props)): ?>
-        <p class="text-muted mb-0">No props have been added for this show yet.</p>
-      <?php else: ?>
-        <div class="table-responsive">
-          <table class="table table-hover align-middle">
-            <thead class="table-dark">
-              <tr>
-                <th>Prop ID</th>
-                <th>Prop Name</th>
-              </tr>
-            </thead>
+      <form method="post" action="index.php?command=addprop" class="row g-3">
+        <input type="hidden" name="show_id" value="<?= htmlspecialchars($show["show_id"]) ?>">
 
-            <tbody>
-              <?php foreach ($props as $prop): ?>
-                <tr>
-                  <td><?= htmlspecialchars($prop["prop_id"]) ?></td>
-                  <td><?= htmlspecialchars($prop["item_name"]) ?></td>
-                </tr>
-              <?php endforeach; ?>
-            </tbody>
-          </table>
+        <div class="col-md-10">
+          <input type="text" name="item_name" class="form-control" placeholder="e.g. Elphaba's Broom" required>
         </div>
-      <?php endif; ?>
 
+        <div class="col-md-2 d-grid">
+          <button type="submit" class="btn btn-primary">Add Prop</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <div class="mt-4">
-    <a href="index.php?command=crewpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
-      Back to Crew View
-    </a>
+  <!-- TABLE -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h2 class="h5 mb-3">Current Props</h2>
 
-    <a href="index.php?command=showlist" class="btn btn-outline-secondary">
-      Back to Show List
-    </a>
+      <table class="table table-hover align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>Prop ID</th>
+            <th>Show ID</th>
+            <th>Item Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($props as $prop): ?>
+            <tr>
+              <td><?= htmlspecialchars($prop["prop_id"]) ?></td>
+              <td><?= htmlspecialchars($prop["show_id"]) ?></td>
+              <td><?= htmlspecialchars($prop["item_name"]) ?></td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+
+      <?php if (empty($props)): ?>
+        <p class="text-muted">No props found.</p>
+      <?php endif; ?>
+    </div>
   </div>
 
-</main>
-
+</div>
 </body>
 </html>

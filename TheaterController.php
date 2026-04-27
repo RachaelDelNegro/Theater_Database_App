@@ -30,6 +30,12 @@ class TheaterController {
             || $this->input["command"] == "crewpage"
             || $this->input["command"] == "directorpage"
             || $this->input["command"] == "logout"
+            || $this->input["command"] == "props"
+            || $this->input["command"] == "addprop"
+            || $this->input["command"] == "costumes"
+            || $this->input["command"] == "sets"
+            || $this->input["command"] == "addset"
+            || $this->input["command"] == "addcostume"
             || $this->input["command"] == "characters"
             || $this->input["command"] == "rehearsal"
             || $this->input["command"] == "castlist"
@@ -41,9 +47,9 @@ class TheaterController {
             $command = $this->input["command"];
         }
 
-        if (isset($_GET["search"])) {
-            $command = "search";
-        }
+        // if (isset($_GET["search"])) {
+        //     $command = "search";
+        // }
 
         
         switch($command) {
@@ -66,27 +72,64 @@ class TheaterController {
             case "directorpage":
                 $this->showDirectorPage();
                 break;
+
             case "addshow":
                 $this->showAddShow();
                 break;
+                
             case "showpage":
                 $this->showShowPage();
                 break;
+
             case "signup":
                 $this->showSignUp();
                 break;
+
             case "create_user":
                 $this->createUser();
                 return;
+
             case "selectgroup":
                 $this->addRole();
                 break;
+
             case "createshow":
                 $this->addShow();
                 break;
+
             case "showlist":
                 $this->showList();
                 break;
+
+            case "props":
+                $this->showProps();
+                break;
+
+            case "addprop":
+                $this->addProp();
+                break;
+
+            case "costumes":
+                $this->showCostumes();
+                break;
+
+            case "sets":
+                $this->showSets();
+                break;
+            
+            case "addset":
+                $this->addSet();
+                break;
+
+            case "addcostume":
+                $this->addcostume();
+                break;
+            // case "review":
+            //     $this->leaveReview();
+            //     break;
+            // case "showpagereviewed":
+            //     $this->showShowPage();
+            //     break;
             case "characters":
                 $this->showCharactersPage();
                 break;
@@ -287,6 +330,154 @@ class TheaterController {
             header("Location: index.php?command=directorpage&show_id={$safe_show_id}");
         }
 
+        exit();
+    }
+
+    public function showProps() {
+        $show_id = $_GET["show_id"];
+        $search = $_GET["search"] ?? "";
+
+        if ($search) {
+            $stmt = $this->db->prepare("
+                SELECT * FROM props
+                WHERE show_id = ? AND item_name LIKE ?
+                ORDER BY prop_id
+            ");
+            $stmt->execute([$show_id, "%" . $search . "%"]);
+        } else {
+            $stmt = $this->db->prepare("
+                SELECT * FROM props
+                WHERE show_id = ?
+                ORDER BY prop_id
+            ");
+            $stmt->execute([$show_id]);
+        }
+
+        $props = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        include "props.php";
+    }
+
+    public function addProp() {
+        $show_id = $_POST["show_id"];
+        $item_name = $_POST["item_name"];
+
+        $stmt = $this->db->prepare("
+            INSERT INTO props (show_id, item_name)
+            VALUES (?, ?)
+        ");
+        $stmt->execute([$show_id, $item_name]);
+
+        header("Location: index.php?command=props&show_id=" . urlencode($show_id));
+        exit();
+    }
+
+    public function showSets() {
+        $show_id = $_GET["show_id"];
+        $search = $_GET["search"] ?? "";
+
+        if ($search) {
+            $stmt = $this->db->prepare("
+                SELECT * FROM sets
+                WHERE show_id = ? 
+                AND (set_item_name LIKE ? OR material LIKE ?)
+                ORDER BY set_id
+            ");
+            $stmt->execute([$show_id, "%" . $search . "%", "%" . $search . "%"]);
+        } else {
+            $stmt = $this->db->prepare("
+                SELECT * FROM sets
+                WHERE show_id = ?
+                ORDER BY set_id
+            ");
+            $stmt->execute([$show_id]);
+        }
+
+        $sets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        include "sets.php";
+    }
+
+    public function addSet() {
+        $show_id = $_POST["show_id"];
+        $set_item_name = $_POST["set_item_name"];
+        $material = $_POST["material"] ?? "";
+
+        $stmt = $this->db->prepare("
+            INSERT INTO sets (show_id, set_item_name, material)
+            VALUES (?, ?, ?)
+        ");
+        $stmt->execute([$show_id, $set_item_name, $material]);
+
+        header("Location: index.php?command=sets&show_id=" . urlencode($show_id));
+        exit();
+    }
+
+    public function showCostumes() {
+        $show_id = $_GET["show_id"];
+        $search = $_GET["search"] ?? "";
+
+        if ($search) {
+            $stmt = $this->db->prepare("
+                SELECT * FROM costumes
+                WHERE show_id = ?
+                AND (
+                    costume_name LIKE ?
+                    OR clothing_color LIKE ?
+                    OR size LIKE ?
+                )
+                ORDER BY costume_id
+            ");
+            $like = "%" . $search . "%";
+            $stmt->execute([$show_id, $like, $like, $like]);
+        } else {
+            $stmt = $this->db->prepare("
+                SELECT * FROM costumes
+                WHERE show_id = ?
+                ORDER BY costume_id
+            ");
+            $stmt->execute([$show_id]);
+        }
+
+        $costumes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        include "costumes.php";
+    }
+
+    public function addCostume() {
+        $show_id = $_POST["show_id"];
+        $costume_name = $_POST["costume_name"];
+        $clothing_color = $_POST["clothing_color"] ?? "";
+        $character_id = $_POST["character_id"] ?: null;
+        $size = $_POST["size"] ?? "";
+
+        $stmt = $this->db->prepare("
+            INSERT INTO costumes 
+            (show_id, costume_name, clothing_color, character_id, size)
+            VALUES (?, ?, ?, ?, ?)
+        ");
+
+        $stmt->execute([
+            $show_id,
+            $costume_name,
+            $clothing_color,
+            $character_id,
+            $size
+        ]);
+
+        header("Location: index.php?command=costumes&show_id=" . urlencode($show_id));
         exit();
     }
 
