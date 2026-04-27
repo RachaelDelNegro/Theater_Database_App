@@ -1,4 +1,7 @@
 <!doctype html>
+<?php
+ include('database_controller.php');
+?>
 <html lang="en">
   <head>
     <meta charset="utf-8">
