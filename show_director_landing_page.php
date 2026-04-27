@@ -6,25 +6,31 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
   <title>Director Landing Page</title>
 </head>
+
 <body class="bg-light">
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
-    <a class="navbar-brand" href="show_list.html">Theater Database</a>
+    <a class="navbar-brand" href="index.php?command=showlist">Theater Database</a>
+
     <div class="d-flex gap-2">
-      <a href="show_list.html" class="btn btn-outline-light btn-sm">All Shows</a>
+      <a href="index.php?command=showlist" class="btn btn-outline-light btn-sm">All Shows</a>
       <a href="login.php" class="btn btn-outline-light btn-sm">Log Out</a>
     </div>
   </div>
 </nav>
 
 <main class="container my-5">
+
   <div class="text-center mb-4">
-    <h1 class="display-5">Director View: Wicked</h1>
+    <h1 class="display-5">
+      Director View: <?= htmlspecialchars($show["title"]) ?>
+    </h1>
     <p class="lead text-muted">Director tools for managing this production.</p>
   </div>
 
   <div class="row g-4">
+
     <div class="col-md-4">
       <div class="card shadow-sm h-100">
         <div class="card-body">
@@ -48,9 +54,13 @@
     <div class="col-md-4">
       <div class="card shadow-sm h-100">
         <div class="card-body">
-          <h2 class="h5">Manage Researsal Schedule</h2>
+          <h2 class="h5">Manage Rehearsal Schedule</h2>
           <p>Add, edit, or remove rehearsals and production meetings.</p>
-          <a href="rehearsal.html" class="btn btn-outline-secondary">Open Rehearsal</a>
+
+          <a href="index.php?command=rehearsal&show_id=<?= htmlspecialchars($show["show_id"]) ?>" 
+             class="btn btn-outline-secondary">
+            Open Rehearsal
+          </a>
         </div>
       </div>
     </div>
@@ -90,12 +100,21 @@
         </div>
       </div>
     </div>
+
   </div>
 
   <div class="mt-4">
-    <a href="show_landing_page.html" class="btn btn-primary">Back to Show Landing Page</a>
-    <a href="show_list.html" class="btn btn-outline-secondary">Back to Show List</a>
+    <a href="index.php?command=showpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" 
+       class="btn btn-primary">
+      Back to Show Landing Page
+    </a>
+
+    <a href="index.php?command=showlist" class="btn btn-outline-secondary">
+      Back to Show List
+    </a>
   </div>
+
 </main>
+
 </body>
 </html>
