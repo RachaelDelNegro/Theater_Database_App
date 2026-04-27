@@ -80,7 +80,7 @@
             <ul class="list-group list-group-flush">
               <?php foreach ($events as $event): ?>
                 <li class="list-group-item">
-                  <strong><?= htmlspecialchars($event["event_name"]) ?></strong><br>
+                  <strong><?= htmlspecialchars($event["event_title"]) ?></strong><br>
                   <?= htmlspecialchars($event["event_date"]) ?>
                   <?= htmlspecialchars($event["event_time"]) ?>
                 </li>
