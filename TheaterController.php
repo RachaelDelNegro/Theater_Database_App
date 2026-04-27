@@ -478,7 +478,7 @@ class TheaterController {
     }
     public function addPropsToShow($showid, $propname) {
         $stmt = $this->db->prepare("
-        INSERT INTO props ('show_id', 'item_name') VALUES (?, ?)");
+        INSERT INTO props (show_id, item_name) VALUES (?, ?)");
 
         $stmt->execute([$showid, $propname]);
     }
@@ -491,7 +491,7 @@ class TheaterController {
     }
 
     public function deleteProp($propid) {
-        $stmt = $this->db->prepare("DELETE FROM prop WHERE prop_id = ?");
+        $stmt = $this->db->prepare("DELETE FROM props WHERE prop_id = ?");
 
         $stmt->execute([$propid]);
     }
@@ -503,6 +503,24 @@ class TheaterController {
         $sets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $sets;
+    }
+        public function addSetsToShow($showid, $setname, $material) {
+        $stmt = $this->db->prepare("
+        INSERT INTO sets (show_id, set_item_name, material) VALUES (?, ?, ?)");
+
+        $stmt->execute([$showid, $setname, $material]);
+    }
+    public function updateSetInfo($showid, $setname, $material, $setid) {
+        $stmt = $this->db->prepare("
+        UPDATE sets SET show_id=?, item_name=?, material=? WHERE set_id=?");
+
+        $stmt->execute([$showid, $setname, $material, $setid]);
+    }
+
+    public function deleteSet($setid) {
+        $stmt = $this->db->prepare("DELETE FROM sets WHERE set_id = ?");
+
+        $stmt->execute([$setid]);
     }
 
     public function getCostumesForShow($showid) {
