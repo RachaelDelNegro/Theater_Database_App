@@ -416,6 +416,29 @@ class TheaterController {
         return $costumes;
     }
 
+    public function getEventsForShow() {
+        $events = $this->db->query("select * from events where show_id=$1", $_SESSION["show_id"]);
+
+        return $events;
+    }
+
+    public function getUsersForShow() {
+        $users = $this->db->query("select username, user_role from user_shows natural join users where show_id=$1", $_SESSION["show_id"]);
+
+        return $users;
+    }
+
+    public function getCharactersForShow() {
+        $characters = $this->db->query("select * from characters where show_id=$1", $_SESSION["show_id"]);
+
+        return $characters;
+    }
+
+    public function getActorRoleForShow() {
+        $actorRoles = $this->db->query("select * from users natural join actors natural join characters where show_id=$1", $_SESSION["show_id"]);
+    }
+    
+
 
     public function search() {
         if (empty($_GET["search"])) {
