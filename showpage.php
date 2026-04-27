@@ -94,13 +94,36 @@
   </div>
 
   <div class="mt-4">
+
     <a href="group.php?show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
       Join This Show
     </a>
 
+    <?php if (isset($_SESSION["perms"]) && $_SESSION["show_id"] == $show["show_id"]): ?>
+
+      <?php if ($_SESSION["perms"] === "actor"): ?>
+        <a href="index.php?command=actorpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-success">
+          Go to Actor View
+        </a>
+
+      <?php elseif ($_SESSION["perms"] === "crew"): ?>
+        <a href="index.php?command=crewpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-success">
+          Go to Crew View
+        </a>
+
+      <?php elseif ($_SESSION["perms"] === "director"): ?>
+        <a href="index.php?command=directorpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-success">
+          Go to Director View
+        </a>
+
+      <?php endif; ?>
+
+    <?php endif; ?>
+
     <a href="index.php?command=showlist" class="btn btn-outline-secondary">
       Back to Show List
     </a>
+
   </div>
 
 </main>
