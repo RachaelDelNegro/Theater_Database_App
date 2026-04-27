@@ -94,25 +94,12 @@
   </div>
 
   <div class="mt-4">
-    <?php if ($_SESSION['perms'] == 'actor'): ?>        
-      <a href="index.php?command=actorpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
-        Go to the Actor Page
-      </a>
-    <?php elseif ($_SESSION['perms'] == 'crew'): ?>
-      <a href="index.php?command=crewpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
-        Go to the Crew Page
-      </a>
-    <?php elseif ($_SESSION['perms'] == 'director'): ?>
-      <a href="index.php?command=directorpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
-        Go to the Director Page
-      </a>
-    <?php endif; ?>
 
     <a href="group.php?show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
       Join This Show
     </a>
 
-    <?php if (isset($_SESSION["perms"]) && $_SESSION["show_id"] == $show["show_id"]): ?>
+    <?php if (isset($_SESSION["perms"])): ?>
 
       <?php if ($_SESSION["perms"] === "actor"): ?>
         <a href="index.php?command=actorpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-success">
