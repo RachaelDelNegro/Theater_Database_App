@@ -8,106 +8,39 @@
 </head>
 
 <body class="bg-light">
-<div class="container my-5">
 
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h1>Crew List</h1>
-      <p class="text-muted mb-0">
-        Show: <?= htmlspecialchars($show["title"]) ?>
-      </p>
-    </div>
-
-    <a href="index.php?command=directorpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
-      Back to Director Page
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="index.php?command=showlist">Theater Database</a>
+    <a href="index.php?command=showpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-light btn-sm">
+      Back to Show
     </a>
+  </div>
+</nav>
+
+<main class="container my-5">
+  <div class="text-center mb-4">
+    <h1 class="display-5">Crew List</h1>
+    <p class="lead text-muted">
+      Crew members signed up for <?= htmlspecialchars($show["title"]) ?>
+    </p>
   </div>
 
   <div class="card shadow-sm">
     <div class="card-body">
-      <h2 class="h5 mb-3">Crew Members and Tasks</h2>
-
-      <table class="table table-hover align-middle">
-        <thead class="table-dark">
-          <tr>
-            <th>User ID</th>
-            <th>Crew Member</th>
-            <th>Assigned Task</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <?php foreach ($crewList as $crew): ?>
-            <tr>
-              <td><?= htmlspecialchars($crew["user_id"]) ?></td>
-              <td><?= htmlspecialchars($crew["username"]) ?></td>
-              <td>
-                <?= htmlspecialchars($crew["task"] ?? "No task assigned") ?>
-
-                <!-- EDIT BUTTON -->
-                <button 
-                  type="button" 
-                  class="btn btn-sm btn-outline-primary ms-2"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editTaskModal<?= htmlspecialchars($crew["user_id"]) ?>">
-                  Edit
-                </button>
-
-                <button 
-                    type="submit" 
-                    class="btn btn-sm btn-outline-danger ms-2"
-                    onclick="return confirm('Delete this task?')">
-                    Delete
-                </button>
-
-                <!-- MODAL -->
-                <div class="modal fade" id="editTaskModal<?= htmlspecialchars($crew["user_id"]) ?>" tabindex="-1">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-
-                      <form method="post" action="index.php?command=assigncrewtask">
-                        <div class="modal-header">
-                          <h5 class="modal-title">
-                            Edit Task for <?= htmlspecialchars($crew["username"]) ?>
-                          </h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-
-                        <div class="modal-body">
-                          <input type="hidden" name="show_id" value="<?= htmlspecialchars($show["show_id"]) ?>">
-                          <input type="hidden" name="user_id" value="<?= htmlspecialchars($crew["user_id"]) ?>">
-
-                          <label class="form-label">Assigned Task</label>
-                          <input
-                            type="text"
-                            name="task"
-                            class="form-control"
-                            value="<?= htmlspecialchars($crew["task"] ?? "") ?>"
-                            placeholder="e.g. lights, camera, costumes">
-                        </div>
-
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                            Cancel
-                          </button>
-                          <button type="submit" class="btn btn-primary">
-                            Save Changes
-                          </button>
-                        </div>
-                      </form>
-
-                    </div>
-                  </div>
-                </div>
-
-              </td>
-            </tr>
+      <?php if (empty($crew)): ?>
+        <p class="text-muted mb-0">No crew members have joined this show yet.</p>
+      <?php else: ?>
+        <ul class="list-group list-group-flush">
+          <?php foreach ($crew as $member): ?>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span><?= htmlspecialchars($member["username"]) ?></span>
+              <span class="badge bg-secondary">
+                <?= htmlspecialchars($member["perms"]) ?>
+              </span>
+            </li>
           <?php endforeach; ?>
-        </tbody>
-      </table>
-
-      <?php if (empty($crewList)): ?>
-        <p class="text-muted">No crew members found for this show.</p>
+        </ul>
       <?php endif; ?>
     </div>
   </div>
