@@ -476,6 +476,25 @@ class TheaterController {
 
         return $props;
     }
+    public function addPropsToShow($showid, $propname) {
+        $stmt = $this->db->prepare("
+        INSERT INTO props ('show_id', 'item_name') VALUES (?, ?)");
+
+        $stmt->execute([$showid, $propname]);
+    }
+
+    public function updatePropInfo($showid, $propname, $propid) {
+        $stmt = $this->db->prepare("
+        UPDATE props SET show_id=?, item_name=? WHERE prop_id=?");
+
+        $stmt->execute([$showid, $propname, $propid]);
+    }
+
+    public function deleteProp($propid) {
+        $stmt = $this->db->prepare("DELETE FROM prop WHERE prop_id = ?");
+
+        $stmt->execute([$propid]);
+    }
 
     public function getSetsForShow($showid) {
         $stmt = $this->db->prepare("SELECT * FROM props WHERE show_id = ?");
