@@ -33,6 +33,7 @@ class TheaterController {
             || $this->input["command"] == "characters"
             || $this->input["command"] == "rehearsal"
             || $this->input["command"] == "castlist"
+            || $this->input["command"] == "props"
             || isset($_SESSION["username"])
         )) {
             $command = $this->input["command"];
@@ -87,13 +88,14 @@ class TheaterController {
             case "characters":
                 $this->showCharactersPage();
                 break;
-
             case "rehearsal":
                 $this->showRehearsalPage();
                 break;
-
             case "castlist":
                 $this->showCastListPage();
+                break;
+            case "props":
+                $this->showPropsPage();
                 break;
             // case "review":
             //     $this->leaveReview();
@@ -318,6 +320,18 @@ class TheaterController {
         $costumes = $this->getCostumesForShow($show_id);
 
         include "costumes.php";
+    }
+
+    public function showPropsPage() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $props = $this->getPropsForShow($show_id);
+
+        include "props.php";
     }
 
     public function showRehearsalPage() {

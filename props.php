@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-  <title>Characters</title>
+  <title>Props</title>
 </head>
 
 <body class="bg-light">
@@ -19,43 +19,41 @@
 </nav>
 
 <main class="container my-5">
+
   <div class="text-center mb-4">
-    <h1 class="display-5">Costumes</h1>
+    <h1 class="display-5">Props</h1>
     <p class="lead text-muted">
-      Costumes for <?= htmlspecialchars($show["title"]) ?>
+      Props for <?= htmlspecialchars($show["title"]) ?>
     </p>
   </div>
 
   <div class="card shadow-sm">
     <div class="card-body">
-      <?php if (empty($costumes)): ?>
-        <p class="text-muted mb-0">No costumes have been added for this show yet.</p>
+
+      <?php if (empty($props)): ?>
+        <p class="text-muted mb-0">No props have been added for this show yet.</p>
       <?php else: ?>
         <div class="table-responsive">
           <table class="table table-hover align-middle">
             <thead class="table-dark">
               <tr>
-                <th>Costume</th>
-                <th>Color</th>
-                <th>Character Name</th>
+                <th>Prop ID</th>
+                <th>Prop Name</th>
               </tr>
             </thead>
+
             <tbody>
-              <?php foreach ($costumes as $costume): ?>
+              <?php foreach ($props as $prop): ?>
                 <tr>
-                  <td><?= htmlspecialchars($costume["costume_name"]) ?></td>
-                  <td>
-                    <?= htmlspecialchars($costume["clothing_color"]) ?>
-                  </td>
-                  <td>
-                    <?= htmlspecialchars($costume["character_name"]) ?>
-                  </td>
+                  <td><?= htmlspecialchars($prop["prop_id"]) ?></td>
+                  <td><?= htmlspecialchars($prop["item_name"]) ?></td>
                 </tr>
               <?php endforeach; ?>
             </tbody>
           </table>
         </div>
       <?php endif; ?>
+
     </div>
   </div>
 
@@ -68,6 +66,7 @@
       Back to Show List
     </a>
   </div>
+
 </main>
 
 </body>
