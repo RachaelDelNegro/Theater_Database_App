@@ -60,9 +60,15 @@
   </div>
 
   <div class="mt-4">
-    <a href="index.php?command=actorpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
-      Back to Actor View
-    </a>
+    <?php if ($_SESSION['perms'] == 'director'): ?>
+      <a href="index.php?command=directorpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
+        Back to Director View
+      </a>
+    <?php else: ?>
+      <a href="index.php?command=actorpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-primary">
+        Back to Actor View
+      </a>
+    <?php endif; ?>
 
     <a href="index.php?command=showlist" class="btn btn-outline-secondary">
       Back to Show List
