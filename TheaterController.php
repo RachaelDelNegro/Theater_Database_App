@@ -203,9 +203,9 @@ class TheaterController {
 
     public function addRole() {
         if (!isset($_SESSION["username"])) {
-            header("Location: index.php?command=welcome");
-            exit();
-        }
+            var_dump($_SESSION);
+            die("Not logged in");
+}
 
         $role = $_POST["role"] ?? null;
         $show_id = $_POST["show_id"] ?? null;

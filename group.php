@@ -76,12 +76,11 @@ if (!$show_id) {
                 Close
               </button>
               <!-- Add userID to Cast table and take them to the cast view landing page -->
-              <form action="index.php?command=selectgroup" method="POST">
-                <input type="hidden" name="role" value="actor">
-                <button type="submit" class="btn btn-success">
-                  Join Cast!
-                </button>
-              </form>
+            <form action="index.php?command=selectgroup" method="POST">
+              <input type="hidden" name="show_id" value="<?= htmlspecialchars($show_id) ?>">
+              <input type="hidden" name="role" value="actor">
+              <button type="submit" class="btn btn-success">Join Cast!</button>
+            </form>
         </div>
         </div>
     </div>
@@ -104,12 +103,10 @@ if (!$show_id) {
               </button>
               <!-- Add userID to Crew table and take them to the crew view landing page -->
               <form action="index.php?command=selectgroup" method="POST">
-                <input type="hidden" name="role" value="actor">
-                <button type="submit" class="btn btn-success">
-                  Join Crew!
-                </button>
+                <input type="hidden" name="show_id" value="<?= htmlspecialchars($show_id) ?>">
+                <input type="hidden" name="role" value="crew">
+                <button type="submit" class="btn btn-success">Join Crew!</button>
               </form>
-        </div>
         </div>
     </div>
     </div>
@@ -131,10 +128,9 @@ if (!$show_id) {
               </button>
               <!-- Add userID to Director table and take them to the director view landing page -->
               <form action="index.php?command=selectgroup" method="POST">
-                <input type="hidden" name="role" value="actor">
-                <button type="submit" class="btn btn-success">
-                  Join Director!
-                </button>
+                <input type="hidden" name="show_id" value="<?= htmlspecialchars($show_id) ?>">
+                <input type="hidden" name="role" value="director">
+                <button type="submit" class="btn btn-success">Join Director!</button>
               </form>
         </div>
         </div>
