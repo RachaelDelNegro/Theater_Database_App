@@ -4,6 +4,7 @@ $eventsByDate = [];
 foreach ($events as $event) {
     $eventsByDate[$event["event_date"]][] = $event;
 }
+$isDirector = isset($_SESSION["perms"]) && $_SESSION["perms"] === "director";
 ?>
 
 <!doctype html>
@@ -32,6 +33,37 @@ foreach ($events as $event) {
       Events for <strong><?= htmlspecialchars($show["title"]) ?></strong>
     </p>
   </div>
+
+  <?php if ($isDirector): ?>
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h2 class="h5">Add Rehearsal</h2>
+
+      <form action="index.php?command=addevent" method="POST" class="row g-3">
+        <input type="hidden" name="show_id" value="<?= htmlspecialchars($show["show_id"]) ?>">
+
+        <div class="col-md-4">
+          <label class="form-label">Event Title</label>
+          <input type="text" name="event_title" class="form-control" required>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Date</label>
+          <input type="date" name="event_date" class="form-control" required>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Time</label>
+          <input type="time" name="event_time" class="form-control" required>
+        </div>
+
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">Add Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+<?php endif; ?>
 
   <?php if (empty($eventsByDate)): ?>
     <div class="card shadow-sm">
@@ -64,6 +96,45 @@ foreach ($events as $event) {
                     <strong>Required:</strong>
                     <?= htmlspecialchars($event["required_users"] ?: "No users assigned") ?>
                   </p>
+
+                  <?php if ($isDirector): ?>
+
+                    <form action="index.php?command=updateevent" method="POST" class="row g-2 mt-3">
+                      <input type="hidden" name="show_id" value="<?= htmlspecialchars($show["show_id"]) ?>">
+                      <input type="hidden" name="event_id" value="<?= htmlspecialchars($event["event_id"]) ?>">
+
+                      <div class="col-md-4">
+                        <input type="text" name="event_title" class="form-control"
+                              value="<?= htmlspecialchars($event["event_title"]) ?>" required>
+                      </div>
+
+                      <div class="col-md-3">
+                        <input type="date" name="event_date" class="form-control"
+                              value="<?= htmlspecialchars($event["event_date"]) ?>" required>
+                      </div>
+
+                      <div class="col-md-3">
+                        <input type="time" name="event_time" class="form-control"
+                              value="<?= htmlspecialchars($event["event_time"]) ?>" required>
+                      </div>
+
+                      <div class="col-md-2">
+                        <button type="submit" class="btn btn-sm btn-outline-primary w-100">
+                          Update
+                        </button>
+                      </div>
+                    </form>
+
+                    <form action="index.php?command=deleteevent" method="POST" class="mt-2">
+                      <input type="hidden" name="show_id" value="<?= htmlspecialchars($show["show_id"]) ?>">
+                      <input type="hidden" name="event_id" value="<?= htmlspecialchars($event["event_id"]) ?>">
+                      <button type="submit" class="btn btn-sm btn-outline-danger">
+                        Delete
+                      </button>
+                    </form>
+
+                  <?php endif; ?>
+
                 </div>
               <?php endforeach; ?>
             </div>
