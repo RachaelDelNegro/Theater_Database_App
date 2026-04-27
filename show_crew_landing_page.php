@@ -31,7 +31,7 @@
       <div class="card shadow-sm h-100">
         <div class="card-body">
           <h2 class="h5">Props Database</h2>
-          <p>View props, assigned scenes, status, and storage locations.</p>
+          <p>View props list</p>
           <a href="index.php?command=props&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
             Open Props
           </a>
@@ -43,10 +43,8 @@
       <div class="card shadow-sm h-100">
         <div class="card-body">
           <h2 class="h5">Costumes Database</h2>
-          <p>View costumes, assigned characters, sizes, and completion status.</p>
-          <a href="index.php?command=costumes&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
-            Open Costumes
-          </a>
+          <p>View costumes, colors, and assigned characters.</p>
+          <a href="index.php?command=costumes&show_id=<?= htmlspecialchars($show["show_id"]) ?></a>" class="btn btn-outline-secondary">Open Costumes</a>
         </div>
       </div>
     </div>
@@ -55,7 +53,7 @@
       <div class="card shadow-sm h-100">
         <div class="card-body">
           <h2 class="h5">Sets Database</h2>
-          <p>View set pieces, locations, assigned scenes, and build progress.</p>
+          <p>View set pieces and materials.</p>
           <a href="index.php?command=sets&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
             Open Sets
           </a>

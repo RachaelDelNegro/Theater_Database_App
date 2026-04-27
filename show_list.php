@@ -1,0 +1,80 @@
+<!doctype html>
+<?php
+ include('database_controller.php');
+?>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <title>Document</title>
+  </head>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <body>
+    <div class="text-end">
+        <a href="login.php" class="btn btn-sm btn-secondary">
+            Log out
+        </a>
+    </div>
+    <div class = "text-center">
+    <h1 class="page-title text-bg-dark">Select Your Show!</h1>
+    </div>
+    <div class="text-end">
+        <a href="add_show.html" class="btn btn-sm btn-primary">
+            Add show
+        </a>
+    </div>
+    <!--Container for List-->
+    <!-- Added update and delete buttons -->
+    <ul class="list-group" id="showList">
+        <li class="list-group-item">Wicked
+        <img src="wicked_photo.jpg" class="img-fluid" alt="wicked_photo">
+           <a href="show_landing_page.html" class="btn btn btn-info">
+            View show
+           </a> 
+            <!-- Join Show -->
+            <a href="group.php" class="btn btn-primary">
+            Join Show
+            </a>
+        <div class = "text-end">
+            <form action="....php" method="post">   <!-- get -->
+                <input type="hidden" name="visitId" value="<?php echo?>">
+                <!-- Update -->
+                <input type="submit" value="Update" name="updateBtn" class="btn btn-sm btn-warning" />
+                <!-- Should take user to "add show" form with pre-filled information -->
+            </form>
+            <!-- Delete: Will take user to "popup" where they will confirm if they want to delete the show -->
+            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal4">
+                Delete
+            </button>    
+       </div>     
+        </li>
+    </ul>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Show?</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Are you sure you want to delete?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                Close
+            </button>
+            <form action="....php" method="post">   <!-- get -->
+                <input type="submit"  value="Delete"  name="deleteBtn" class="btn btn-danger" />
+            <!-- Should delete everything associated with the show from the database -->
+            </form>
+        </div>
+        </div>
+    </div>
+    </div>
+    
+    
+</body>
+</html>
