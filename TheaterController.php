@@ -240,8 +240,18 @@ class TheaterController {
         if ($role === "actor") {
             header("Location: index.php?command=actorpage&show_id={$safe_show_id}");
         } elseif ($role === "crew") {
+            $stmt = $this->db->prepare("
+            INSERT INTO crew_members (user_id)
+            VALUES (?)
+            ");
+            $stmt->execute([$user_id]);
             header("Location: index.php?command=crewpage&show_id={$safe_show_id}");
         } elseif ($role === "director") {
+            $stmt = $this->db->prepare("
+            INSERT INTO directors (user_id, show_id)
+            VALUES (?, ?)
+            ");
+            $stmt->execute([$user_id, $show_id]);
             header("Location: index.php?command=directorpage&show_id={$safe_show_id}");
         }
 
