@@ -417,14 +417,14 @@ class TheaterController {
         return $characters;
     }
 
-    public function getRehearsalScheduleForShow($showid) {
+    public function getRehearsalScheduleForIndividual($showid) {
         $stmt = $this->db->prepare("
             SELECT *
-            FROM events
-            WHERE show_id = ?
+            FROM events NATURAL JOIN event_calls
+            WHERE show_id = ? AND user_id = ?
             ORDER BY event_date, event_time
         ");
-        $stmt->execute([$showid]);
+        $stmt->execute([$showid, $_SESSION["userid"]]);
         $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
