@@ -42,6 +42,9 @@ class TheaterController {
             || $this->input["command"] == "crewlist"
             || $this->input["command"] == "props"
             || $this->input["command"] == "sets"
+            || $this->input["command"] == "addevent"
+            || $this->input["command"] == "updateevent"
+            || $this->input["command"] == "deleteevent"
             || isset($_SESSION["username"])
         )) {
             $command = $this->input["command"];
@@ -147,6 +150,17 @@ class TheaterController {
                 break;
             case "sets":
                 $this->showSetsPage();
+                break;
+            case "addevent":
+                $this->addEvent();
+                break;
+
+            case "updateevent":
+                $this->updateEvent();
+                break;
+
+            case "deleteevent":
+                $this->deleteEvent();
                 break;
             // case "review":
             //     $this->leaveReview();
@@ -571,6 +585,84 @@ class TheaterController {
 
         include "rehearsal.php";
 }
+
+    private function requireDirector($show_id) {
+        if (!isset($_SESSION["userid"])) {
+            header("Location: index.php?command=welcome");
+            exit();
+        }
+
+        $stmt = $this->db->prepare("
+            SELECT perms
+            FROM user_shows
+            WHERE user_id = ? AND show_id = ?
+        ");
+        $stmt->execute([$_SESSION["userid"], $show_id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$row || $row["perms"] !== "director") {
+            die("Only directors can manage rehearsals.");
+        }
+    }
+
+    public function addEvent() {
+        $show_id = $_POST["show_id"];
+        $this->requireDirector($show_id);
+
+        $stmt = $this->db->prepare("
+            INSERT INTO events (show_id, event_title, event_date, event_time)
+            VALUES (?, ?, ?, ?)
+        ");
+
+        $stmt->execute([
+            $show_id,
+            $_POST["event_title"],
+            $_POST["event_date"],
+            $_POST["event_time"]
+        ]);
+
+        header("Location: index.php?command=rehearsal&show_id=" . urlencode($show_id));
+        exit();
+    }
+
+    public function updateEvent() {
+        $show_id = $_POST["show_id"];
+        $this->requireDirector($show_id);
+
+        $stmt = $this->db->prepare("
+            UPDATE events
+            SET event_title = ?, event_date = ?, event_time = ?
+            WHERE event_id = ? AND show_id = ?
+        ");
+
+        $stmt->execute([
+            $_POST["event_title"],
+            $_POST["event_date"],
+            $_POST["event_time"],
+            $_POST["event_id"],
+            $show_id
+        ]);
+
+        header("Location: index.php?command=rehearsal&show_id=" . urlencode($show_id));
+        exit();
+    }
+
+    public function deleteEvent() {
+        $show_id = $_POST["show_id"];
+        $this->requireDirector($show_id);
+
+        $stmt = $this->db->prepare("DELETE FROM event_calls WHERE event_id = ?");
+        $stmt->execute([$_POST["event_id"]]);
+
+        $stmt = $this->db->prepare("
+            DELETE FROM events
+            WHERE event_id = ? AND show_id = ?
+        ");
+        $stmt->execute([$_POST["event_id"], $show_id]);
+
+        header("Location: index.php?command=rehearsal&show_id=" . urlencode($show_id));
+        exit();
+    }
 
     public function showCastListPage() {
         $show_id = $_GET["show_id"];
