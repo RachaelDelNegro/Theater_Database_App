@@ -143,6 +143,17 @@ class TheaterController {
         $stmt->execute([$show_id]);
         $show = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        //Get user perms
+        $stmt = $this->db->prepare("SELECT perms FROM user_shows WHERE show_id = ? AND user_id = ?");
+        $stmt->execute([$show_id, $_SESSION["userid"]]);
+        $perm = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (is_array($perm)) {
+            $_SESSION['perms'] = $perm['perms'];
+        } else {
+            $_SESSION['perms'] = "none";
+        }
+
         // Get users who joined this show
         $stmt = $this->db->prepare("
             SELECT users.username, user_shows.perms
@@ -318,6 +329,7 @@ class TheaterController {
 
             if ($correct) {
                 $_SESSION["username"] = $_POST["username"];
+                $_SESSION["userid"] = $results[0]["user_id"];
                 $_SESSION["user_role"] = $results[0]["user_role"];
 
                 header("Location: ?command=showlist");
