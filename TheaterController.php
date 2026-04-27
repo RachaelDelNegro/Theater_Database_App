@@ -29,6 +29,7 @@ class TheaterController {
             || $this->input["command"] == "actorpage"
             || $this->input["command"] == "crewpage"
             || $this->input["command"] == "directorpage"
+            || $this->input["command"] == "logout"
             || isset($_SESSION["username"])
         )) {
             $command = $this->input["command"];
@@ -43,18 +44,9 @@ class TheaterController {
             case "login":
                 $this->login();
                 break;
-            // case "logout":
-            //     $this->logout();
-            //     break;
-            // case "homepage":
-            //     $this->showHomepage();
-            //     break;
-            // case "profile":
-            //     $this->showProfile();
-            //     break;
-            // case "search":
-            //     $this->search();
-            //     break;
+            case "logout":
+                $this->logout();
+                break;
             case "actorpage":
                 $this->showActorPage();
                 break;
@@ -87,12 +79,6 @@ class TheaterController {
             case "showlist":
                 $this->showList();
                 break;
-            // case "review":
-            //     $this->leaveReview();
-            //     break;
-            // case "showpagereviewed":
-            //     $this->showShowPage();
-            //     break;
             default:
                 $this->showWelcome();
                 break;
@@ -428,40 +414,4 @@ class TheaterController {
         return $costumes;
     }
 
-
-    public function search() {
-        if (empty($_GET["search"])) {
-            $this->showHomepage();
-            return;
-        } else {
-            $search_key = htmlspecialchars($_GET["search"]);
-            $result = $this->db->query("select * from project_shows where lower(name) like lower($1)", "%" . $search_key . "%");
-    
-            $array_string = $this->displayShows($result);
-    
-            $this->showSearch($array_string);
-        }
-
-    }
-
-
-    public function displayShows($shows) {
-        $array_string = "";
-        foreach ($shows as $show) {
-            $array_string = $array_string . "<div class='card col-3' id='" . $show["showid"] . "'>
-                    <form method='post' action='?command=showpage'>
-                        <input type='hidden' name='showid' value='" . $show["showid"] . "'>
-                        <button type='submit' method='post'>
-                            <img class='card-img-top' src='" . $show["thumbnail"] . "' alt='" . $show["name"] . " Poster' style='width: 100%;'>
-                        </button>
-                    </form>
-                    <div class='card-body' id='" . $show["showid"] . "s'>
-                      <h3 class='card-title'>" . $show["name"] ."</h3>
-                      <p class='card-text'>" . $show["network"] . "</p>
-                    </div>
-                </div> \n";
-        }
-
-        return $array_string;
-    }
 }

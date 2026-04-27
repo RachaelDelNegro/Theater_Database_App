@@ -10,7 +10,7 @@
 <div class="container my-5">
 
   <div class="text-end">
-    <a href="login.php" class="btn btn-secondary">Log out</a>
+    <a href="?command=logout" class="btn btn-secondary">Log out</a>
   </div>
 
   <div class="text-center">
