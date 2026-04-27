@@ -29,6 +29,7 @@ class TheaterController {
             || $this->input["command"] == "actorpage"
             || $this->input["command"] == "crewpage"
             || $this->input["command"] == "directorpage"
+            || $this->input["command"] == "logout"
             || $this->input["command"] == "characters"
             || $this->input["command"] == "rehearsal"
             || $this->input["command"] == "castlist"
@@ -46,18 +47,9 @@ class TheaterController {
             case "login":
                 $this->login();
                 break;
-            // case "logout":
-            //     $this->logout();
-            //     break;
-            // case "homepage":
-            //     $this->showHomepage();
-            //     break;
-            // case "profile":
-            //     $this->showProfile();
-            //     break;
-            // case "search":
-            //     $this->search();
-            //     break;
+            case "logout":
+                $this->logout();
+                break;
             case "actorpage":
                 $this->showActorPage();
                 break;
@@ -121,29 +113,6 @@ class TheaterController {
         include "signup.php";
     }
 
-    public function showHomepage() {
-        $shows = $this->db->query("select * from project_shows");
-
-        $array_string = $this->displayShows($shows);
-
-        include "/students/jvg2hc/students/jvg2hc//private/project/templates/homepage.php";
-    }
-
-    public function showSearch($array_string_search) {
-        $array_string = $array_string_search;
-
-        include "/students/jvg2hc/students/jvg2hc//private/project/templates/homepage.php";
-    }
-
-    public function showProfile() {
-        $username = $_SESSION["username"];
-
-        $reviews = $this->db->query("select * from project_reviews where username = $1", $username);
-
-        $array_string = $this->displayReviewsProfilePage($reviews);
-
-        include "/students/jvg2hc/students/jvg2hc//private/project/templates/profile.php";
-    }
 
     public function showAddShow($message="") {
         include "addshow.php";
@@ -156,6 +125,17 @@ class TheaterController {
         $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
         $stmt->execute([$show_id]);
         $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        //Get user perms
+        $stmt = $this->db->prepare("SELECT perms FROM user_shows WHERE show_id = ? AND user_id = ?");
+        $stmt->execute([$show_id, $_SESSION["userid"]]);
+        $perm = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (is_array($perm)) {
+            $_SESSION['perms'] = $perm['perms'];
+        } else {
+            $_SESSION['perms'] = "none";
+        }
 
         // Get users who joined this show
         $stmt = $this->db->prepare("
@@ -280,8 +260,18 @@ class TheaterController {
         if ($role === "actor") {
             header("Location: index.php?command=actorpage&show_id={$safe_show_id}");
         } elseif ($role === "crew") {
+            $stmt = $this->db->prepare("
+            INSERT INTO crew_members (user_id)
+            VALUES (?)
+            ");
+            $stmt->execute([$user_id]);
             header("Location: index.php?command=crewpage&show_id={$safe_show_id}");
         } elseif ($role === "director") {
+            $stmt = $this->db->prepare("
+            INSERT INTO directors (user_id, show_id)
+            VALUES (?, ?)
+            ");
+            $stmt->execute([$user_id, $show_id]);
             header("Location: index.php?command=directorpage&show_id={$safe_show_id}");
         }
 
@@ -392,6 +382,7 @@ class TheaterController {
 
             if ($correct) {
                 $_SESSION["username"] = $_POST["username"];
+                $_SESSION["userid"] = $results[0]["user_id"];
                 $_SESSION["user_role"] = $results[0]["user_role"];
 
                 header("Location: ?command=showlist");
@@ -458,95 +449,62 @@ class TheaterController {
         return preg_match($pattern, $password);
     }
 
+    public function getPropsForShow($showid) {
+        $stmt = $this->db->prepare("SELECT * FROM props WHERE show_id = ?");
 
-    public function deleteUser() {
-
-        $results = $this->db->query("delete from users where username=$1", $_SESSION["username"]);
-
-        $this->logout();
-    }
-
-    public function getShows() {
-        $shows = $this->db->query("select * from shows");
-
-        return $shows;
-    }
-
-    public function getPropsForShow() {
-        $props = $this->db->query("select * from props where show_id=$1", $_SESSION["show_id"]);
+        $stmt->execute([$showid]);
+        $props = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $props;
     }
 
-    public function getSetsForShow() {
-        $sets = $this->db->query("select * from sets where show_id=$1", $_SESSION["show_id"]);
+    public function getSetsForShow($showid) {
+        $stmt = $this->db->prepare("SELECT * FROM props WHERE show_id = ?");
+
+        $stmt->execute([$showid]);
+        $sets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $sets;
     }
 
-    public function getCostumesForShow() {
-        $costumes = $this->db->query("select * from costumes where show_id=$1", $_SESSION["show_id"]);
+    public function getCostumesForShow($showid) {
+        $stmt = $this->db->prepare("SELECT * FROM props WHERE show_id = ?");
+
+        $stmt->execute([$showid]);
+        $costumes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $costumes;
     }
 
-    public function getEventsForShow() {
-        $events = $this->db->query("select * from events where show_id=$1", $_SESSION["show_id"]);
+    public function getCastList($showid) {
+        $stmt = $this->db->prepare("
+        SELECT username, character_name 
+        FROM users NATURAL JOIN actors NATURAL JOIN characters 
+        WHERE show_id = ?");
 
-        return $events;
+        $stmt->execute([$showid]);
+        $castList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $castList;
     }
 
-    public function getUsersForShow() {
-        $users = $this->db->query("select username, user_role from user_shows natural join users where show_id=$1", $_SESSION["show_id"]);
+    public function getCharactersForShow($showid) {
+        $stmt = $this->db->prepare("SELECT * FROM characters WHERE show_id = ?");
 
-        return $users;
-    }
-
-    public function getCharactersForShow() {
-        $characters = $this->db->query("select * from characters where show_id=$1", $_SESSION["show_id"]);
+        $stmt->execute([$showid]);
+        $characters = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $characters;
     }
 
-    public function getActorRoleForShow() {
-        $actorRoles = $this->db->query("select * from users natural join actors natural join characters where show_id=$1", $_SESSION["show_id"]);
-    }
-    
-
-
-    public function search() {
-        if (empty($_GET["search"])) {
-            $this->showHomepage();
-            return;
-        } else {
-            $search_key = htmlspecialchars($_GET["search"]);
-            $result = $this->db->query("select * from project_shows where lower(name) like lower($1)", "%" . $search_key . "%");
-    
-            $array_string = $this->displayShows($result);
-    
-            $this->showSearch($array_string);
-        }
-
-    }
-
-
-    public function displayShows($shows) {
-        $array_string = "";
-        foreach ($shows as $show) {
-            $array_string = $array_string . "<div class='card col-3' id='" . $show["showid"] . "'>
-                    <form method='post' action='?command=showpage'>
-                        <input type='hidden' name='showid' value='" . $show["showid"] . "'>
-                        <button type='submit' method='post'>
-                            <img class='card-img-top' src='" . $show["thumbnail"] . "' alt='" . $show["name"] . " Poster' style='width: 100%;'>
-                        </button>
-                    </form>
-                    <div class='card-body' id='" . $show["showid"] . "s'>
-                      <h3 class='card-title'>" . $show["name"] ."</h3>
-                      <p class='card-text'>" . $show["network"] . "</p>
-                    </div>
-                </div> \n";
-        }
-
-        return $array_string;
+    public function getRehearsalScheduleForIndividual($showid) {
+        $stmt = $this->db->prepare("
+            SELECT *
+            FROM events NATURAL JOIN event_calls
+            WHERE show_id = ? AND user_id = ?
+            ORDER BY event_date, event_time
+        ");
+        $stmt->execute([$showid, $_SESSION["userid"]]);
+        $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

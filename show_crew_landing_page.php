@@ -60,16 +60,6 @@
     <div class="col-md-6">
       <div class="card shadow-sm h-100">
         <div class="card-body">
-          <h2 class="h5">Scenes Database</h2>
-          <p>View scene requirements, props needed, set changes, and notes.</p>
-          <a href="#" class="btn btn-outline-secondary">Open Scenes</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6">
-      <div class="card shadow-sm h-100">
-        <div class="card-body">
           <h2 class="h5">Rehearsal Schedule</h2>
           <p>View tech rehearsals, production meetings, and run-through dates.</p>
           <a href="index.php?command=rehearsal&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
