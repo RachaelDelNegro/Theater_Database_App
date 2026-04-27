@@ -36,6 +36,12 @@ class TheaterController {
             || $this->input["command"] == "sets"
             || $this->input["command"] == "addset"
             || $this->input["command"] == "addcostume"
+            || $this->input["command"] == "characters"
+            || $this->input["command"] == "castlist"
+            || $this->input["command"] == "rehearsal"
+            || $this->input["command"] == "crewlist"
+            || $this->input["command"] == "assigncrewtask"
+            || $this->input["command"] == "deletecrewtask"
             || isset($_SESSION["username"])
         )) {
             $command = $this->input["command"];
@@ -50,9 +56,11 @@ class TheaterController {
             case "login":
                 $this->login();
                 break;
+
             case "logout":
                 $this->logout();
                 break;
+
             case "actorpage":
                 $this->showActorPage();
                 break;
@@ -116,12 +124,31 @@ class TheaterController {
             case "addcostume":
                 $this->addcostume();
                 break;
-            // case "review":
-            //     $this->leaveReview();
-            //     break;
-            // case "showpagereviewed":
-            //     $this->showShowPage();
-            //     break;
+
+            case "characters":
+                $this->showCharacters();
+                break;
+
+            case "castlist":
+                $this->showCastList();
+                break;
+
+            case "rehearsal":
+                $this->showRehearsal();
+                break;
+
+            case "crewlist":
+                $this->showCrewList();
+                break;
+
+            case "assigncrewtask":
+                $this->assignCrewTask();
+                break;
+
+            case "deletecrewtask":
+                $this->deleteCrewTask();
+                break;
+
             default:
                 $this->showWelcome();
                 break;
@@ -456,6 +483,9 @@ class TheaterController {
         $stmt->execute([$show_id]);
         $show = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        $characters = $this->getCharactersForShow($show_id);
+        $castList = $this->getCastList($show_id);
+
         include "show_actor_landing_page.php";
     }
 
@@ -570,33 +600,36 @@ class TheaterController {
     }
 
     public function getSetsForShow($showid) {
-        $stmt = $this->db->prepare("SELECT * FROM props WHERE show_id = ?");
-
+        $stmt = $this->db->prepare("SELECT * FROM sets WHERE show_id = ?");
         $stmt->execute([$showid]);
-        $sets = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $sets;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getCostumesForShow($showid) {
-        $stmt = $this->db->prepare("SELECT * FROM props WHERE show_id = ?");
-
+        $stmt = $this->db->prepare("SELECT * FROM costumes WHERE show_id = ?");
         $stmt->execute([$showid]);
-        $costumes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $costumes;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getCastList($showid) {
         $stmt = $this->db->prepare("
-        SELECT username, character_name 
-        FROM users NATURAL JOIN actors NATURAL JOIN characters 
-        WHERE show_id = ?");
+            SELECT 
+                users.user_id,
+                users.username,
+                characters.character_id,
+                characters.character_name,
+                characters.main_side
+            FROM actors
+            JOIN users 
+                ON actors.user_id = users.user_id
+            JOIN characters 
+                ON actors.character_id = characters.character_id
+            WHERE characters.show_id = ?
+            ORDER BY characters.character_name
+        ");
 
         $stmt->execute([$showid]);
-        $castList = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $castList;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getCharactersForShow($showid) {
@@ -617,5 +650,93 @@ class TheaterController {
         ");
         $stmt->execute([$showid, $_SESSION["userid"]]);
         $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $events;
     }
+
+    public function showCharacters() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $characters = $this->getCharactersForShow($show_id);
+
+        include "characters.php";
+    }
+
+    public function showCastList() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $castList = $this->getCastList($show_id);
+
+        include "castlist.php";
+    }
+
+    public function showCrewList() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $stmt = $this->db->prepare("
+            SELECT 
+                users.user_id,
+                users.username,
+                crew_tasks.task
+            FROM crew_members
+            JOIN users 
+                ON crew_members.user_id = users.user_id
+            LEFT JOIN crew_tasks 
+                ON crew_members.user_id = crew_tasks.user_id
+            JOIN user_shows
+                ON users.user_id = user_shows.user_id
+            WHERE user_shows.show_id = ?
+            AND user_shows.perms = 'crew'
+            ORDER BY users.username, crew_tasks.task
+        ");
+        $stmt->execute([$show_id]);
+        $crewList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        include "crewlist.php";
+    }
+
+    public function assignCrewTask() {
+        $show_id = $_POST["show_id"];
+        $user_id = $_POST["user_id"];
+        $task = $_POST["task"];
+
+        $stmt = $this->db->prepare("
+            INSERT INTO crew_tasks (user_id, task)
+            VALUES (?, ?)
+            ON DUPLICATE KEY UPDATE task = VALUES(task)
+        ");
+
+        $stmt->execute([$user_id, $task]);
+
+        header("Location: index.php?command=crewlist&show_id=" . urlencode($show_id));
+        exit();
+    }
+
+    public function deleteCrewTask() {
+        $show_id = $_POST["show_id"];
+        $user_id = $_POST["user_id"];
+
+        $stmt = $this->db->prepare("
+            DELETE FROM crew_tasks 
+            WHERE user_id = ?
+        ");
+        $stmt->execute([$user_id]);
+
+        header("Location: index.php?command=crewlist&show_id=" . urlencode($show_id));
+        exit();
+    }
+
+
 }
