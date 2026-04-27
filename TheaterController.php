@@ -504,7 +504,7 @@ class TheaterController {
 
         return $sets;
     }
-        public function addSetsToShow($showid, $setname, $material) {
+    public function addSetsToShow($showid, $setname, $material) {
         $stmt = $this->db->prepare("
         INSERT INTO sets (show_id, set_item_name, material) VALUES (?, ?, ?)");
 
@@ -554,6 +554,24 @@ class TheaterController {
         $characters = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $characters;
+    }
+    public function addCharactersToShow($showid, $charactername, $main_side) {
+        $stmt = $this->db->prepare("
+        INSERT INTO characters (show_id, character_name, main_side) VALUES (?, ?, ?)");
+
+        $stmt->execute([$showid, $charactername, $main_side]);
+    }
+    public function updateCharacterInfo($showid, $charactername, $main_side, $characterid) {
+        $stmt = $this->db->prepare("
+        UPDATE characters SET show_id=?, character_name=?, main_side=? WHERE character_id=?");
+
+        $stmt->execute([$showid, $charactername, $main_side, $characterid]);
+    }
+
+    public function deleteCharacter($characterid) {
+        $stmt = $this->db->prepare("DELETE FROM characters WHERE character_id = ?");
+
+        $stmt->execute([$characterid]);
     }
 
     public function getRehearsalScheduleForIndividual($showid) {
