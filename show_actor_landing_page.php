@@ -40,16 +40,6 @@
     <div class="col-md-6">
       <div class="card shadow-sm h-100">
         <div class="card-body">
-          <h2 class="h5">Scenes Database</h2>
-          <p>View scenes, scene numbers, cast involvement, and rehearsal notes.</p>
-          <a href="#" class="btn btn-outline-secondary">Open Scenes</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6">
-      <div class="card shadow-sm h-100">
-        <div class="card-body">
           <h2 class="h5">Rehearsal Schedule</h2>
           <p>View upcoming actor rehearsals and full-cast run-throughs.</p>
           <a href="index.php?command=rehearsal&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">

@@ -382,34 +382,29 @@ class TheaterController {
         return preg_match($pattern, $password);
     }
 
-
-    public function deleteUser() {
-
-        $results = $this->db->query("delete from users where username=$1", $_SESSION["username"]);
-
-        $this->logout();
-    }
-
-    public function getShows() {
-        $shows = $this->db->query("select * from shows");
-
-        return $shows;
-    }
-
     public function getPropsForShow() {
-        $props = $this->db->query("select * from props where show_id=$1", $_SESSION["show_id"]);
+        $stmt = $this->db->prepare("SELECT * FROM props WHERE show_id = ?");
+
+        $stmt->execute([$_SESSION['show_id']]);
+        $props = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $props;
     }
 
     public function getSetsForShow() {
-        $sets = $this->db->query("select * from sets where show_id=$1", $_SESSION["show_id"]);
+        $stmt = $this->db->prepare("SELECT * FROM props WHERE show_id = ?");
+
+        $stmt->execute([$_SESSION['show_id']]);
+        $sets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $sets;
     }
 
     public function getCostumesForShow() {
-        $costumes = $this->db->query("select * from costumes where show_id=$1", $_SESSION["show_id"]);
+        $stmt = $this->db->prepare("SELECT * FROM props WHERE show_id = ?");
+
+        $stmt->execute([$_SESSION['show_id']]);
+        $costumes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $costumes;
     }
