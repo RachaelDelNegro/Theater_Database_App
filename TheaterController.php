@@ -34,6 +34,7 @@ class TheaterController {
             || $this->input["command"] == "rehearsal"
             || $this->input["command"] == "castlist"
             || $this->input["command"] == "props"
+            || $this->input["command"] == "sets"
             || isset($_SESSION["username"])
         )) {
             $command = $this->input["command"];
@@ -96,6 +97,9 @@ class TheaterController {
                 break;
             case "props":
                 $this->showPropsPage();
+                break;
+            case "sets":
+                $this->showSetsPage();
                 break;
             // case "review":
             //     $this->leaveReview();
@@ -334,18 +338,34 @@ class TheaterController {
         include "props.php";
     }
 
-    public function showRehearsalPage() {
+    public function showSetsPage() {
         $show_id = $_GET["show_id"];
 
         $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
         $stmt->execute([$show_id]);
         $show = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        $sets = $this->getSetsForShow($show_id);
+
+        include "sets.php";
+    }
+
+    public function showRehearsalPage() {
+        $show_id = $_GET["show_id"];
+
         $stmt = $this->db->prepare("
-            SELECT *
+            SELECT 
+                events.event_id,
+                events.event_title,
+                events.event_date,
+                events.event_time,
+                GROUP_CONCAT(users.username ORDER BY users.username SEPARATOR ', ') AS required_users
             FROM events
-            WHERE show_id = ?
-            ORDER BY event_date, event_time
+            LEFT JOIN event_calls ON events.event_id = event_calls.event_id
+            LEFT JOIN users ON event_calls.user_id = users.user_id
+            WHERE events.show_id = ?
+            GROUP BY events.event_id, events.event_title, events.event_date, events.event_time
+            ORDER BY events.event_date, events.event_time
         ");
         $stmt->execute([$show_id]);
         $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -511,7 +531,7 @@ class TheaterController {
     }
 
     public function getSetsForShow($showid) {
-        $stmt = $this->db->prepare("SELECT * FROM props WHERE show_id = ?");
+        $stmt = $this->db->prepare("SELECT * FROM sets WHERE show_id = ?");
 
         $stmt->execute([$showid]);
         $sets = $stmt->fetchAll(PDO::FETCH_ASSOC);

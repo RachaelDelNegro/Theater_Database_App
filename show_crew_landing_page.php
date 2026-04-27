@@ -53,8 +53,10 @@
       <div class="card shadow-sm h-100">
         <div class="card-body">
           <h2 class="h5">Sets Database</h2>
-          <p>View set pieces, locations, assigned scenes, and build progress.</p>
-          <a href="#" class="btn btn-outline-secondary">Open Sets</a>
+          <p>View set pieces and materials.</p>
+          <a href="index.php?command=sets&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
+            Open Sets
+          </a>
         </div>
       </div>
     </div>
