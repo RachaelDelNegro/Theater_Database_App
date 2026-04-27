@@ -27,12 +27,14 @@
   </div>
 
   <div class="row g-4">
-    <div class="col-md-6">
+    <<div class="col-md-6">
       <div class="card shadow-sm h-100">
         <div class="card-body">
           <h2 class="h5">Character Database</h2>
-          <p>View assigned characters, descriptions, relationships, and actor assignments.</p>
-          <a href="#" class="btn btn-outline-secondary">Open Characters</a>
+          <p>View assigned characters, descriptions, and actor assignments.</p>
+          <a href="index.php?command=characters&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
+            Open Characters
+          </a>
         </div>
       </div>
     </div>

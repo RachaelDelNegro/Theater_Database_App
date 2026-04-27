@@ -309,7 +309,7 @@ class TheaterController {
             SELECT *
             FROM characters
             WHERE show_id = ?
-            ORDER BY name
+            ORDER BY character_name
         ");
         $stmt->execute([$show_id]);
         $characters = $stmt->fetchAll(PDO::FETCH_ASSOC);
