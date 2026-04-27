@@ -41,8 +41,8 @@
       <div class="card shadow-sm h-100">
         <div class="card-body">
           <h2 class="h5">Costumes Database</h2>
-          <p>View costumes, assigned characters, sizes, and completion status.</p>
-          <a href="#" class="btn btn-outline-secondary">Open Costumes</a>
+          <p>View costumes and assigned characters.</p>
+          <a href="index.php?command=costumes&show_id=<?= htmlspecialchars($show["show_id"]) ?></a>" class="btn btn-outline-secondary">Open Costumes</a>
         </div>
       </div>
     </div>

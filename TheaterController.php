@@ -53,7 +53,9 @@ class TheaterController {
             case "actorpage":
                 $this->showActorPage();
                 break;
-
+            case "costumes":
+                $this->showCostumesPage();
+                break;
             case "crewpage":
                 $this->showCrewPage();
                 break;
@@ -307,6 +309,17 @@ class TheaterController {
         include "characters.php";
     }
 
+        public function showCostumesPage() {
+        $show_id = $_GET["show_id"];
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $costumes = $this->getCostumesForShow($show_id);
+
+        include "costumes.php";
+    }
+
     public function showRehearsalPage() {
         $show_id = $_GET["show_id"];
 
@@ -428,7 +441,13 @@ class TheaterController {
                 password_hash($_POST["password"], PASSWORD_DEFAULT),
                 "actor"  // default role for now
             ]);
+                $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ?");
+                $stmt->execute([$_POST["username"]]);
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+                $_SESSION["username"] = $_POST["username"];
+                $_SESSION["userid"] = $results[0]["user_id"];
+                $_SESSION["user_role"] = $results[0]["user_role"];
                 header("Location: ?command=showlist");
                 exit();
             } else {
@@ -468,7 +487,10 @@ class TheaterController {
     }
 
     public function getCostumesForShow($showid) {
-        $stmt = $this->db->prepare("SELECT * FROM props WHERE show_id = ?");
+        $stmt = $this->db->prepare("
+        SELECT * 
+        FROM costumes NATURAL JOIN characters 
+        WHERE show_id = ?");
 
         $stmt->execute([$showid]);
         $costumes = $stmt->fetchAll(PDO::FETCH_ASSOC);

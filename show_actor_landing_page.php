@@ -27,7 +27,7 @@
   </div>
 
   <div class="row g-4">
-    <<div class="col-md-6">
+    <div class="col-md-6">
       <div class="card shadow-sm h-100">
         <div class="card-body">
           <h2 class="h5">Character Database</h2>
