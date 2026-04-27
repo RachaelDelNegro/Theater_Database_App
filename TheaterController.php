@@ -45,6 +45,7 @@ class TheaterController {
             || $this->input["command"] == "addevent"
             || $this->input["command"] == "updateevent"
             || $this->input["command"] == "deleteevent"
+            || $this->input["command"] == "deleteshow"
             || isset($_SESSION["username"])
         )) {
             $command = $this->input["command"];
@@ -156,6 +157,9 @@ class TheaterController {
 
             case "deleteevent":
                 $this->deleteEvent();
+                break;
+            case "deleteshow":
+                $this->deleteShow();
                 break;
             // case "review":
             //     $this->leaveReview();
@@ -956,6 +960,16 @@ class TheaterController {
         } else {
             $_SESSION['perms'] = "none";
         }
+    }
+
+    public function deleteShow() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("DELETE FROM shows WHERE show_id = ?");
+
+        $stmt->execute([$show_id]);
+
+        $this->showList();
     }
 
 }
