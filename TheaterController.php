@@ -124,12 +124,7 @@ class TheaterController {
             case "addcostume":
                 $this->addcostume();
                 break;
-            // case "review":
-            //     $this->leaveReview();
-            //     break;
-            // case "showpagereviewed":
-            //     $this->showShowPage();
-            //     break;
+
             case "characters":
                 $this->showCharactersPage();
                 break;
@@ -148,12 +143,6 @@ class TheaterController {
             case "sets":
                 $this->showSetsPage();
                 break;
-            // case "review":
-            //     $this->leaveReview();
-            //     break;
-            // case "showpagereviewed":
-            //     $this->showShowPage();
-            //     break;
             default:
                 $this->showWelcome();
                 break;
@@ -359,6 +348,8 @@ class TheaterController {
         $stmt->execute([$show_id]);
         $show = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        $this->getPermissions($show_id);
+
         include "props.php";
     }
 
@@ -402,6 +393,8 @@ class TheaterController {
         $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
         $stmt->execute([$show_id]);
         $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $this->getPermissions($show_id);
 
         include "sets.php";
     }
@@ -452,6 +445,8 @@ class TheaterController {
         $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
         $stmt->execute([$show_id]);
         $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $this->getPermissions($show_id);
 
         include "costumes.php";
     }
@@ -507,6 +502,8 @@ class TheaterController {
         $stmt->execute([$show_id]);
         $characters = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        $this->getPermissions($show_id);
+
         include "characters.php";
     }
 
@@ -517,6 +514,8 @@ class TheaterController {
         $show = $stmt->fetch(PDO::FETCH_ASSOC);
 
         $costumes = $this->getCostumesForShow($show_id);
+
+        $this->getPermissions($show_id);
 
         include "costumes.php";
     }
@@ -530,6 +529,8 @@ class TheaterController {
 
         $props = $this->getPropsForShow($show_id);
 
+        $this->getPermissions($show_id);
+
         include "props.php";
     }
 
@@ -541,6 +542,8 @@ class TheaterController {
         $show = $stmt->fetch(PDO::FETCH_ASSOC);
 
         $sets = $this->getSetsForShow($show_id);
+
+        $this->getPermissions($show_id);
 
         include "sets.php";
     }
@@ -569,6 +572,8 @@ class TheaterController {
         $stmt->execute([$show_id]);
         $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        $this->getPermissions($show_id);
+
         include "rehearsal.php";
 }
 
@@ -589,6 +594,8 @@ class TheaterController {
         $stmt->execute([$show_id]);
         $cast = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        $this->getPermissions($show_id);
+
         include "castlist.php";
     }
 
@@ -608,6 +615,8 @@ class TheaterController {
         ");
         $stmt->execute([$show_id]);
         $crew = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->getPermissions($show_id);
 
         include "crewlist.php";
 }
@@ -837,4 +846,18 @@ class TheaterController {
         $stmt->execute([$showid, $_SESSION["userid"]]);
         $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getPermissions($showid) {
+        //Get user perms
+        $stmt = $this->db->prepare("SELECT perms FROM user_shows WHERE show_id = ? AND user_id = ?");
+        $stmt->execute([$showid, $_SESSION["userid"]]);
+        $perm = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (is_array($perm)) {
+            $_SESSION['perms'] = $perm['perms'];
+        } else {
+            $_SESSION['perms'] = "none";
+        }
+    }
+
 }

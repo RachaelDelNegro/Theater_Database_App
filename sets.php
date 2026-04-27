@@ -18,9 +18,15 @@
       </p>
     </div>
 
-    <a href="index.php?command=crewpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
-      Back to Crew Page
-    </a>
+    <?php if ($_SESSION['perms'] == 'director'): ?>
+        <a href="index.php?command=directorpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
+            Back to Director Page
+        </a>
+    <?php else: ?>
+        <a href="index.php?command=crewpage&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
+        Back to Crew Page
+        </a>
+    <?php endif; ?>
   </div>
 
   <form method="get" action="index.php" class="mb-4">
