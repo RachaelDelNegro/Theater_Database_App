@@ -60,7 +60,7 @@
                 <li class="list-group-item">
                   <?= htmlspecialchars($member["username"]) ?>
                   —
-                  <?= htmlspecialchars($member["user_role"]) ?>
+                  <?= htmlspecialchars($member["perms"] ?? "No Role") ?>
                 </li>
               <?php endforeach; ?>
             </ul>

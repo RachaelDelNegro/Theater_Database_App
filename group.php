@@ -30,7 +30,7 @@ if (!$show_id) {
           <p class="card-text">“Movies will make you famous; Television will make you rich; But theatre will make you good.” -Terrence Mann</p>
           <form action="index.php?command=selectgroup" method="POST">
             <input type="hidden" name="role" value="actor">
-            <input type="hidden" name="show_id" value="<?= htmlspecialchars($show_id) ?>">
+            <input type="hidden" name="show_id" value="<?= $show_id ?>">
             <button type="submit" class="btn btn-secondary">Select</button>
           </form>
         </div>

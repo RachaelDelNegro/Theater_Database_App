@@ -145,7 +145,7 @@ class TheaterController {
 
         // Get users who joined this show
         $stmt = $this->db->prepare("
-            SELECT users.username, users.user_role
+            SELECT users.username, user_shows.perms
             FROM user_shows
             JOIN users ON user_shows.user_id = users.user_id
             WHERE user_shows.show_id = ?
@@ -155,10 +155,10 @@ class TheaterController {
 
         // Get directors
         $stmt = $this->db->prepare("
-            SELECT users.username, users.user_role
+            SELECT users.username, user_shows.perms
             FROM user_shows
             JOIN users ON user_shows.user_id = users.user_id
-            WHERE user_shows.show_id = ? AND users.user_role = 'director'
+            WHERE user_shows.show_id = ? AND user_shows.perms = 'director'
         ");
         $stmt->execute([$show_id]);
         $directors = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -202,21 +202,73 @@ class TheaterController {
     }
 
     public function addRole() {
-        $role = $_POST["role"];
-        $show_id = $_POST["show_id"];
+        if (!isset($_SESSION["username"])) {
+            header("Location: index.php?command=welcome");
+            exit();
+        }
 
-        $stmt = $this->db->prepare("UPDATE users SET user_role = ? WHERE username = ?");
-        $stmt->execute([$role, $_SESSION["username"]]);
+        $role = $_POST["role"] ?? null;
+        $show_id = $_POST["show_id"] ?? null;
 
-        $_SESSION["user_role"] = $role;
+        $allowed_roles = ["actor", "crew", "director"];
+
+        if (!$role || !$show_id || !in_array($role, $allowed_roles)) {
+            die("Invalid role or show selected.");
+        }
+
+        // Get current user id
+        $stmt = $this->db->prepare("
+            SELECT user_id 
+            FROM users 
+            WHERE username = ?
+        ");
+        $stmt->execute([$_SESSION["username"]]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$user) {
+            die("User not found.");
+        }
+
+        $user_id = $user["user_id"];
+
+        // Check if user is already in this show
+        $stmt = $this->db->prepare("
+            SELECT perms 
+            FROM user_shows 
+            WHERE user_id = ? AND show_id = ?
+        ");
+        $stmt->execute([$user_id, $show_id]);
+        $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($existing) {
+            $existing_role = htmlspecialchars($existing["perms"]);
+            $safe_show_id = urlencode($show_id);
+
+            echo "<script>
+                alert('You are already in this show as {$existing_role}');
+                window.location.href = 'index.php?command=showpage&show_id={$safe_show_id}';
+            </script>";
+            exit();
+        }
+
+        // Add user to this show with their selected role
+        $stmt = $this->db->prepare("
+            INSERT INTO user_shows (user_id, show_id, perms)
+            VALUES (?, ?, ?)
+        ");
+        $stmt->execute([$user_id, $show_id, $role]);
+
+        $_SESSION["perms"] = $role;
         $_SESSION["show_id"] = $show_id;
 
-        if ($role == "actor") {
-            header("Location: index.php?command=actorpage&show_id=" . urlencode($show_id));
-        } elseif ($role == "crew") {
-            header("Location: index.php?command=crewpage&show_id=" . urlencode($show_id));
-        } elseif ($role == "director") {
-            header("Location: index.php?command=directorpage&show_id=" . urlencode($show_id));
+        $safe_show_id = urlencode($show_id);
+
+        if ($role === "actor") {
+            header("Location: index.php?command=actorpage&show_id={$safe_show_id}");
+        } elseif ($role === "crew") {
+            header("Location: index.php?command=crewpage&show_id={$safe_show_id}");
+        } elseif ($role === "director") {
+            header("Location: index.php?command=directorpage&show_id={$safe_show_id}");
         }
 
         exit();
