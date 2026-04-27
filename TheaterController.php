@@ -29,6 +29,9 @@ class TheaterController {
             || $this->input["command"] == "actorpage"
             || $this->input["command"] == "crewpage"
             || $this->input["command"] == "directorpage"
+            || $this->input["command"] == "characters"
+            || $this->input["command"] == "rehearsal"
+            || $this->input["command"] == "castlist"
             || isset($_SESSION["username"])
         )) {
             $command = $this->input["command"];
@@ -86,6 +89,17 @@ class TheaterController {
                 break;
             case "showlist":
                 $this->showList();
+                break;
+            case "characters":
+                $this->showCharactersPage();
+                break;
+
+            case "rehearsal":
+                $this->showRehearsalPage();
+                break;
+
+            case "castlist":
+                $this->showCastListPage();
                 break;
             // case "review":
             //     $this->leaveReview();
@@ -203,9 +217,9 @@ class TheaterController {
 
     public function addRole() {
         if (!isset($_SESSION["username"])) {
-            var_dump($_SESSION);
-            die("Not logged in");
-}
+            header("Location: index.php?command=welcome");
+            exit();
+        }
 
         $role = $_POST["role"] ?? null;
         $show_id = $_POST["show_id"] ?? null;
@@ -284,6 +298,64 @@ class TheaterController {
         include "show_actor_landing_page.php";
     }
 
+    public function showCharactersPage() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $stmt = $this->db->prepare("
+            SELECT *
+            FROM characters
+            WHERE show_id = ?
+            ORDER BY name
+        ");
+        $stmt->execute([$show_id]);
+        $characters = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        include "characters.php";
+    }
+
+    public function showRehearsalPage() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $stmt = $this->db->prepare("
+            SELECT *
+            FROM events
+            WHERE show_id = ?
+            ORDER BY event_date, event_time
+        ");
+        $stmt->execute([$show_id]);
+        $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        include "rehearsal.php";
+    }
+
+    public function showCastListPage() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $stmt = $this->db->prepare("
+            SELECT users.username, user_shows.perms
+            FROM user_shows
+            JOIN users ON user_shows.user_id = users.user_id
+            WHERE user_shows.show_id = ? AND user_shows.perms = 'actor'
+            ORDER BY users.username
+        ");
+        $stmt->execute([$show_id]);
+        $cast = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        include "castlist.php";
+    }
+
     public function showCrewPage() {
         $show_id = $_GET["show_id"];
 
@@ -293,6 +365,8 @@ class TheaterController {
 
         include "show_crew_landing_page.php";
     }
+
+
 
     public function showDirectorPage() {
         $show_id = $_GET["show_id"];
