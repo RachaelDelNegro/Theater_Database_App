@@ -2,6 +2,7 @@
 class TheaterController {
 
     private $db;
+    private $input;
 
     public function __construct($input) {
 
@@ -18,11 +19,16 @@ class TheaterController {
 
         if (isset($this->input["command"]) && (
             $this->input["command"] == "login"
-             || $this->input["command"] == "signup"
-             || $this->input["command"] == "create_user"
-             || (isset($_SESSION["username"])))) {
-                $command = $this->input["command"];
-            }
+            || $this->input["command"] == "signup"
+            || $this->input["command"] == "create_user"
+            || $this->input["command"] == "addshow"
+            || $this->input["command"] == "createshow"
+            || $this->input["command"] == "showlist"
+            || $this->input["command"] == "selectgroup"
+            || isset($_SESSION["username"])
+        )) {
+            $command = $this->input["command"];
+        }
 
         if (isset($_GET["search"])) {
             $command = "search";
@@ -45,9 +51,9 @@ class TheaterController {
             // case "search":
             //     $this->search();
             //     break;
-            // case "addshow":
-            //     $this->showAddShow();
-            //     break;
+            case "addshow":
+                $this->showAddShow();
+                break;
             // case "showpage":
             //     $this->getShowInfo();
             //     break;
@@ -60,9 +66,12 @@ class TheaterController {
             case "selectgroup":
                 $this->addRole();
                 break;
-            // case "createshow":
-            //     $this->addShow();
-            //     break;
+            case "createshow":
+                $this->addShow();
+                break;
+            case "showlist":
+                $this->showList();
+                break;
             // case "review":
             //     $this->leaveReview();
             //     break;
@@ -108,8 +117,7 @@ class TheaterController {
     }
 
     public function showAddShow($message="") {
-
-        include "/students/jvg2hc/students/jvg2hc//private/project/templates/addshow.php";
+        include "addshow.php";
     }
 
     public function showShowPage() {
@@ -124,6 +132,30 @@ class TheaterController {
         $array_string = $this->displayReviewsShowPage($reviews);
 
         include "/students/jvg2hc/students/jvg2hc//private/project/templates/show.php";
+    }
+    public function addShow() {
+        $stmt = $this->db->prepare("
+            INSERT INTO shows 
+            (title, screen_writer, setting_description, theme)
+            VALUES (?, ?, ?, ?)
+        ");
+
+        $stmt->execute([
+            $_POST["title"],
+            $_POST["screen_writer"],
+            $_POST["setting_description"],
+            $_POST["theme"]
+        ]);
+
+        header("Location: index.php?command=showlist");
+        exit();
+    }
+
+    public function showList() {
+        $stmt = $this->db->query("SELECT * FROM shows");
+        $shows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        include "showlist.php";
     }
 
     public function login() {
@@ -142,7 +174,7 @@ class TheaterController {
                 $_SESSION["username"] = $_POST["username"];
                 $_SESSION["user_role"] = $results[0]["user_role"];
 
-                header("Location: show_list.html");
+                header("Location: ?command=showlist");
                 exit();
             } else {
                 $this->showWelcome("<div class='alert alert-danger' style='margin-top: 2%'> Incorrect Password </div>");
@@ -186,7 +218,7 @@ class TheaterController {
                 "actor"  // default role for now
             ]);
 
-                header("Location: show_list.html");
+                header("Location: ?command=showlist");
                 exit();
             } else {
 
