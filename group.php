@@ -110,6 +110,7 @@ if (!$show_id) {
         </div>
     </div>
     </div>
+</div>
 
     <!-- Modal (Director) -->
     <div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

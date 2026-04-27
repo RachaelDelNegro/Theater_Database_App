@@ -36,7 +36,9 @@
         <div class="card-body">
           <h2 class="h5">Manage Cast</h2>
           <p>View actors, assign characters, and update cast information.</p>
-          <a href="#" class="btn btn-outline-secondary">Open Cast</a>
+          <a href="index.php?command=castlist&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
+            Open Cast
+          </a>
         </div>
       </div>
     </div>
@@ -46,7 +48,9 @@
         <div class="card-body">
           <h2 class="h5">Manage Crew</h2>
           <p>View crew members, roles, and production responsibilities.</p>
-          <a href="#" class="btn btn-outline-secondary">Open Crew</a>
+          <a href="index.php?command=crewlist&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
+            Open Crew
+          </a>
         </div>
       </div>
     </div>
@@ -69,7 +73,9 @@
       <div class="card shadow-sm h-100">
         <div class="card-body">
           <h2 class="h5">Characters</h2>
-          <a href="#" class="btn btn-outline-secondary">Manage</a>
+          <a href="index.php?command=characters&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
+            Manage
+          </a>
         </div>
       </div>
     </div>
@@ -78,7 +84,9 @@
       <div class="card shadow-sm h-100">
         <div class="card-body">
           <h2 class="h5">Props</h2>
-          <a href="#" class="btn btn-outline-secondary">Manage</a>
+          <a href="index.php?command=props&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
+            Manage
+          </a>
         </div>
       </div>
     </div>
@@ -87,7 +95,9 @@
       <div class="card shadow-sm h-100">
         <div class="card-body">
           <h2 class="h5">Costumes</h2>
-          <a href="#" class="btn btn-outline-secondary">Manage</a>
+          <a href="index.php?command=costumes&show_id=<?= htmlspecialchars($show["show_id"]) ?>" class="btn btn-outline-secondary">
+            Manage
+          </a>
         </div>
       </div>
     </div>

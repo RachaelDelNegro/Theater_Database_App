@@ -33,6 +33,7 @@ class TheaterController {
             || $this->input["command"] == "characters"
             || $this->input["command"] == "rehearsal"
             || $this->input["command"] == "castlist"
+            || $this->input["command"] == "crewlist"
             || $this->input["command"] == "props"
             || $this->input["command"] == "sets"
             || isset($_SESSION["username"])
@@ -94,6 +95,9 @@ class TheaterController {
                 break;
             case "castlist":
                 $this->showCastListPage();
+                break;
+            case "crewlist":
+                $this->showCrewListPage();
                 break;
             case "props":
                 $this->showPropsPage();
@@ -353,6 +357,10 @@ class TheaterController {
     public function showRehearsalPage() {
         $show_id = $_GET["show_id"];
 
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
         $stmt = $this->db->prepare("
             SELECT 
                 events.event_id,
@@ -371,7 +379,7 @@ class TheaterController {
         $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         include "rehearsal.php";
-    }
+}
 
     public function showCastListPage() {
         $show_id = $_GET["show_id"];
@@ -392,6 +400,26 @@ class TheaterController {
 
         include "castlist.php";
     }
+
+    public function showCrewListPage() {
+        $show_id = $_GET["show_id"];
+
+        $stmt = $this->db->prepare("SELECT * FROM shows WHERE show_id = ?");
+        $stmt->execute([$show_id]);
+        $show = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $stmt = $this->db->prepare("
+            SELECT users.username, user_shows.perms
+            FROM user_shows
+            JOIN users ON user_shows.user_id = users.user_id
+            WHERE user_shows.show_id = ? AND user_shows.perms = 'crew'
+            ORDER BY users.username
+        ");
+        $stmt->execute([$show_id]);
+        $crew = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        include "crewlist.php";
+}
 
     public function showCrewPage() {
         $show_id = $_GET["show_id"];
